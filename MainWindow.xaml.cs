@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace Meine_Erinnerungs_app
@@ -45,19 +46,17 @@ namespace Meine_Erinnerungs_app
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
-        {// falls beim klicken des Buttons kein Grund eingegeben wurde, wird eine Fehlermeldung angezeigt
+        {
             if (GrundTextBox.Text == "Grund")
             {
                 MessageBox.Show("Bitte geben Sie einen Grund ein.");
                 return;
             }
-            // falls beim klicken des Buttons kein Datum eingegeben wurde, wird eine Fehlermeldung angezeigt
             if (!DatumTextBox.SelectedDate.HasValue)
             {
                 MessageBox.Show("Bitte geben Sie ein Datum ein.");
                 return;
             }
-            //  falls beim klicken des Buttons keine Uhrzeit eingegeben wurde, wird eine Fehlermeldung angezeigt
             if (StundenComboBox.SelectedItem == null || MinutenComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Bitte geben Sie eine Uhrzeit ein.");
@@ -125,6 +124,30 @@ namespace Meine_Erinnerungs_app
                 {
                     termin.Background = new SolidColorBrush(Colors.Green);
                 }
+            }
+        }
+
+        private void ErgebnisListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ErgebnisListBox.SelectedItem is Termin selectedTermin)
+            {
+                var listBoxItem = (ListBoxItem)ErgebnisListBox.ItemContainerGenerator.ContainerFromItem(selectedTermin);
+                if (listBoxItem != null)
+                {
+                    var animation = new DoubleAnimation(0.5, 1, TimeSpan.FromSeconds(0.5))
+                    {
+                        AutoReverse = true,
+                        RepeatBehavior = RepeatBehavior.Forever
+                    };
+                    listBoxItem.BeginAnimation(OpacityProperty, animation);
+                }
+            }
+
+            DeleteButton.IsEnabled = ErgebnisListBox.SelectedItem != null;
+
+            if (ErgebnisListBox.Items.Count == 0)
+            {
+                DeleteButton.IsEnabled = false;
             }
         }
     }

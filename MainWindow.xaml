@@ -59,18 +59,18 @@
                     <ComboBoxItem Content="55" />
                 </ComboBox>
             </StackPanel>
-            <Button Content="TERMIN BESTÄTIGEN!" Width="150" Height="60" Margin="10" Click="Button_Click" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
+            <Button Name="ConfirmButton" Content="TERMIN BESTÄTIGEN!" Width="150" Height="60" Margin="10" Click="Button_Click" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
                 <Button.Effect>
                     <DropShadowEffect/>
                 </Button.Effect>
             </Button>
-            <Button Content="Termin entfernen" Width="150" Height="60" Margin="20" Click="Button_Click_1" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
+            <Button Name="DeleteButton" Content="Termin entfernen" Width="150" Height="60" Margin="20" Click="Button_Click_1" Background="#FF1E90FF" Foreground="White" FontWeight="Bold" IsEnabled="False">
                 <Button.Effect>
                     <DropShadowEffect/>
                 </Button.Effect>
             </Button>
         </StackPanel>
-        <ListBox Name="ErgebnisListBox" Width="600" Height="150" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+        <ListBox Name="ErgebnisListBox" Width="600" Height="150" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Bottom" SelectionChanged="ErgebnisListBox_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="5" Background="{Binding Background}">
