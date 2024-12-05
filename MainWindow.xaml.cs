@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -107,24 +108,139 @@ namespace Meine_Erinnerungs_app
         {
             foreach (var termin in Termine)
             {
-                if (DateTime.Now > termin.Zeitpunkt)
+                TimeSpan timeUntilTermin = termin.Zeitpunkt - DateTime.Now;
+
+                if (timeUntilTermin <= TimeSpan.Zero)
                 {
                     termin.Background = new SolidColorBrush(Colors.Red);
                     if (!termin.AlarmTriggered)
                     {
-                        MessageBox.Show($"Erinnerung: {termin.Grund} um {termin.Uhrzeit} am {termin.Datum}");
+                        ShowPopup($"Erinnerung: {termin.Grund} um {termin.Uhrzeit} am {termin.Datum}");
                         termin.AlarmTriggered = true;
                     }
                 }
-                else if (DateTime.Now.AddMinutes(5) > termin.Zeitpunkt)
+                else if (timeUntilTermin <= TimeSpan.FromMinutes(5))
                 {
                     termin.Background = new SolidColorBrush(Colors.Yellow);
+                    if (!termin.FiveMinutesWarning)
+                    {
+                        ShowPopup($"Erinnerung: {termin.Grund} in 5 Minuten");
+                        termin.FiveMinutesWarning = true;
+                    }
+                }
+                else if (timeUntilTermin <= TimeSpan.FromMinutes(15))
+                {
+                    termin.Background = new SolidColorBrush(Colors.Yellow);
+                    if (!termin.FifteenMinutesWarning)
+                    {
+                        ShowPopup($"Erinnerung: {termin.Grund} in 15 Minuten");
+                        termin.FifteenMinutesWarning = true;
+                    }
+                }
+                else if (timeUntilTermin <= TimeSpan.FromMinutes(30))
+                {
+                    termin.Background = new SolidColorBrush(Colors.Yellow);
+                    if (!termin.ThirtyMinutesWarning)
+                    {
+                        ShowPopup($"Erinnerung: {termin.Grund} in 30 Minuten");
+                        termin.ThirtyMinutesWarning = true;
+                    }
+                }
+                else if (timeUntilTermin <= TimeSpan.FromMinutes(60))
+                {
+                    termin.Background = new SolidColorBrush(Colors.Yellow);
+                    if (!termin.SixtyMinutesWarning)
+                    {
+                        ShowPopup($"Erinnerung: {termin.Grund} in 60 Minuten");
+                        termin.SixtyMinutesWarning = true;
+                    }
                 }
                 else
                 {
                     termin.Background = new SolidColorBrush(Colors.Green);
                 }
+
+                if (timeUntilTermin <= TimeSpan.FromMinutes(60) && timeUntilTermin > TimeSpan.Zero)
+                {
+                    BlinkBackground(termin);
+                }
             }
+        }
+
+        private void BlinkBackground(Termin termin)
+        {
+            ColorAnimation colorAnimation = new ColorAnimation
+            {
+                From = Colors.Yellow,
+                To = Colors.Transparent,
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                AutoReverse = true,
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
+            termin.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+        }
+
+        private void ShowPopup(string message)
+        {
+            System.Media.SystemSounds.Exclamation.Play();
+
+            Popup popup = new Popup
+            {
+                Placement = PlacementMode.Center,
+                StaysOpen = false,
+                Child = new TextBlock
+                {
+                    Text = message,
+                    Background = new SolidColorBrush(Colors.LightYellow),
+                    Foreground = new SolidColorBrush(Colors.Black),
+                    Padding = new Thickness(10),
+                    FontSize = 24,
+                    FontWeight = FontWeights.Bold,
+                    TextAlignment = TextAlignment.Center,
+                    Width = SystemParameters.PrimaryScreenWidth // Set the width to the screen width
+                }
+            };
+
+            DoubleAnimation moveAnimation = new DoubleAnimation
+            {
+                From = -200,
+                To = 200,
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                AutoReverse = true,
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
+            ColorAnimation colorAnimation = new ColorAnimation
+            {
+                From = Colors.Red,
+                To = Colors.Blue,
+                Duration = new Duration(TimeSpan.FromSeconds(0.1)),
+                AutoReverse = true,
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
+            TranslateTransform translateTransform = new TranslateTransform();
+            popup.RenderTransform = translateTransform;
+            translateTransform.BeginAnimation(TranslateTransform.XProperty, moveAnimation);
+
+            SolidColorBrush backgroundBrush = new SolidColorBrush(Colors.Red);
+            backgroundBrush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+            ((TextBlock)popup.Child).Background = backgroundBrush;
+
+            // Text animation
+            DoubleAnimation textSizeAnimation = new DoubleAnimation
+            {
+                From = 24,
+                To = 30,
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                AutoReverse = true,
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
+            ((TextBlock)popup.Child).BeginAnimation(TextBlock.FontSizeProperty, textSizeAnimation);
+
+            popup.IsOpen = true;
         }
 
         private void ErgebnisListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -134,7 +250,6 @@ namespace Meine_Erinnerungs_app
                 var listBoxItem = (ListBoxItem)ErgebnisListBox.ItemContainerGenerator.ContainerFromItem(selectedTermin);
                 if (listBoxItem != null)
                 {
-                    // Animation für das Auswählen eines Termins soll langsamer und sanfter sein, Termin soll dem Benutzer entgegenkommen
                     DoubleAnimation scaleAnimation = new DoubleAnimation(1, 1.2, TimeSpan.FromSeconds(0.5));
                     DoubleAnimation opacityAnimation = new DoubleAnimation(1, 0.8, TimeSpan.FromSeconds(0.5));
                     ScaleTransform scaleTransform = new ScaleTransform();
@@ -143,8 +258,7 @@ namespace Meine_Erinnerungs_app
                     listBoxItem.BeginAnimation(UIElement.OpacityProperty, opacityAnimation);
                     scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnimation);
                     scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnimation);
-                    
-                    // wenn Termin deselektiert wird, soll er wieder in die ursprüngliche Größe zurückkehren mit Animation
+
                     listBoxItem.Unselected += (s, ev) =>
                     {
                         DoubleAnimation scaleAnimation2 = new DoubleAnimation(1.2, 1, TimeSpan.FromSeconds(0.5));
@@ -174,7 +288,11 @@ namespace Meine_Erinnerungs_app
         public string Datum { get; set; }
         public string Uhrzeit { get; set; }
         public DateTime Zeitpunkt { get; set; }
-        public Brush Background { get; set; } = new SolidColorBrush(Colors.Green);
+        public SolidColorBrush Background { get; set; } = new SolidColorBrush(Colors.Green);
         public bool AlarmTriggered { get; set; } = false;
+        public bool SixtyMinutesWarning { get; set; } = false;
+        public bool ThirtyMinutesWarning { get; set; } = false;
+        public bool FifteenMinutesWarning { get; set; } = false;
+        public bool FiveMinutesWarning { get; set; } = false;
     }
 }
