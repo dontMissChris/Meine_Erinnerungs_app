@@ -28,7 +28,7 @@ namespace Meine_Erinnerungs_app
         private void RemovePlaceholderText(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            if (textBox != null && (textBox.Text == "Grund" || textBox.Text == "Datum" || textBox.Text == "Uhrzeit"))
+            if (textBox != null && textBox.Text == "Grund")
             {
                 textBox.Text = "";
                 textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
@@ -40,30 +40,37 @@ namespace Meine_Erinnerungs_app
             TextBox textBox = sender as TextBox;
             if (textBox != null && string.IsNullOrWhiteSpace(textBox.Text))
             {
-                if (textBox.Name == "GrundTextBox")
-                {
-                    textBox.Text = "Grund";
-                }
-                else if (textBox.Name == "DatumTextBox")
-                {
-                    textBox.Text = "Datum";
-                }
-                else if (textBox.Name == "UhrzeitTextBox")
-                {
-                    textBox.Text = "Uhrzeit";
-                }
+                textBox.Text = "Grund";
                 textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
             }
         }
 
+        private void DatumTextBox_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Optional: Hier können Sie zusätzliche Logik hinzufügen, wenn das Datum geändert wird
+        }
+
+        private void UhrzeitTextBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Optional: Hier können Sie zusätzliche Logik hinzufügen, wenn die Uhrzeit geändert wird
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ERINNERUNG SCHARF GESTELLT");
+            string grund = GrundTextBox.Text;
+            string datum = DatumTextBox.SelectedDate.HasValue ? DatumTextBox.SelectedDate.Value.ToShortDateString() : "Kein Datum ausgewählt";
+            string uhrzeit = UhrzeitTextBox.SelectedItem != null ? (UhrzeitTextBox.SelectedItem as ComboBoxItem).Content.ToString() : "Keine Uhrzeit ausgewählt";
+
+            ErgebnisTextBox.Text = $"Grund: {grund}\nDatum: {datum}\nUhrzeit: {uhrzeit}";
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // Hier können Sie den Code zum Löschen der Erinnerung hinzufügen
+            GrundTextBox.Text = "Grund";
+            GrundTextBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
+            DatumTextBox.SelectedDate = null;
+            UhrzeitTextBox.SelectedItem = null;
+            ErgebnisTextBox.Text = string.Empty;
         }
     }
 }
