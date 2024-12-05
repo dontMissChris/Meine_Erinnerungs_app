@@ -70,15 +70,20 @@
                 </Button.Effect>
             </Button>
         </StackPanel>
-        <ListBox Name="ErgebnisListBox" Width="600" Height="150" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Bottom" SelectionChanged="ErgebnisListBox_SelectionChanged">
+        <ListBox Name="ErgebnisListBox" Width="600" Height="150" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Bottom" SelectionChanged="ErgebnisListBox_SelectionChanged" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="5" Background="{Binding Background}">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding Grund}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Datum}"/>
-                            <TextBlock Text="{Binding Uhrzeit}"/>
-                        </StackPanel>
+                    <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="5" Background="{Binding Background}" Width="580">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Grund}" FontWeight="Bold" Grid.Column="0" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Datum}" Grid.Column="1" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Uhrzeit}" Grid.Column="2" HorizontalAlignment="Center"/>
+                        </Grid>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>

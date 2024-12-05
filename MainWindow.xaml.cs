@@ -134,12 +134,28 @@ namespace Meine_Erinnerungs_app
                 var listBoxItem = (ListBoxItem)ErgebnisListBox.ItemContainerGenerator.ContainerFromItem(selectedTermin);
                 if (listBoxItem != null)
                 {
-                    var animation = new DoubleAnimation(0.5, 1, TimeSpan.FromSeconds(0.5))
+                    // Animation für das Auswählen eines Termins soll langsamer und sanfter sein, Termin soll dem Benutzer entgegenkommen
+                    DoubleAnimation scaleAnimation = new DoubleAnimation(1, 1.2, TimeSpan.FromSeconds(0.5));
+                    DoubleAnimation opacityAnimation = new DoubleAnimation(1, 0.8, TimeSpan.FromSeconds(0.5));
+                    ScaleTransform scaleTransform = new ScaleTransform();
+                    listBoxItem.RenderTransform = scaleTransform;
+                    listBoxItem.RenderTransformOrigin = new Point(0.5, 0.5);
+                    listBoxItem.BeginAnimation(UIElement.OpacityProperty, opacityAnimation);
+                    scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnimation);
+                    scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnimation);
+                    
+                    // wenn Termin deselektiert wird, soll er wieder in die ursprüngliche Größe zurückkehren mit Animation
+                    listBoxItem.Unselected += (s, ev) =>
                     {
-                        AutoReverse = true,
-                        RepeatBehavior = RepeatBehavior.Forever
+                        DoubleAnimation scaleAnimation2 = new DoubleAnimation(1.2, 1, TimeSpan.FromSeconds(0.5));
+                        DoubleAnimation opacityAnimation2 = new DoubleAnimation(0.8, 1, TimeSpan.FromSeconds(0.5));
+                        ScaleTransform scaleTransform2 = new ScaleTransform();
+                        listBoxItem.RenderTransform = scaleTransform2;
+                        listBoxItem.RenderTransformOrigin = new Point(0.5, 0.5);
+                        listBoxItem.BeginAnimation(UIElement.OpacityProperty, opacityAnimation2);
+                        scaleTransform2.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnimation2);
+                        scaleTransform2.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnimation2);
                     };
-                    listBoxItem.BeginAnimation(OpacityProperty, animation);
                 }
             }
 
