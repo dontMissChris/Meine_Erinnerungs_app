@@ -1,28 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Meine_Erinnerungs_app
 {
-    /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<Termin> Termine { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+            Termine = new ObservableCollection<Termin>();
+            ErgebnisListBox.ItemsSource = Termine;
+            StartReminderCheck();
         }
 
         private void RemovePlaceholderText(object sender, RoutedEventArgs e)
@@ -31,7 +25,7 @@ namespace Meine_Erinnerungs_app
             if (textBox != null && textBox.Text == "Grund")
             {
                 textBox.Text = "";
-                textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+                textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
 
@@ -41,7 +35,7 @@ namespace Meine_Erinnerungs_app
             if (textBox != null && string.IsNullOrWhiteSpace(textBox.Text))
             {
                 textBox.Text = "Grund";
-                textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
+                textBox.Foreground = new SolidColorBrush(Colors.Gray);
             }
         }
 
@@ -50,27 +44,98 @@ namespace Meine_Erinnerungs_app
             // Optional: Hier können Sie zusätzliche Logik hinzufügen, wenn das Datum geändert wird
         }
 
-        private void UhrzeitTextBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Optional: Hier können Sie zusätzliche Logik hinzufügen, wenn die Uhrzeit geändert wird
-        }
-
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
+        {// falls beim klicken des Buttons kein Grund eingegeben wurde, wird eine Fehlermeldung angezeigt
+            if (GrundTextBox.Text == "Grund")
+            {
+                MessageBox.Show("Bitte geben Sie einen Grund ein.");
+                return;
+            }
+            // falls beim klicken des Buttons kein Datum eingegeben wurde, wird eine Fehlermeldung angezeigt
+            if (!DatumTextBox.SelectedDate.HasValue)
+            {
+                MessageBox.Show("Bitte geben Sie ein Datum ein.");
+                return;
+            }
+            //  falls beim klicken des Buttons keine Uhrzeit eingegeben wurde, wird eine Fehlermeldung angezeigt
+            if (StundenComboBox.SelectedItem == null || MinutenComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Bitte geben Sie eine Uhrzeit ein.");
+                return;
+            }
+
             string grund = GrundTextBox.Text;
             string datum = DatumTextBox.SelectedDate.HasValue ? DatumTextBox.SelectedDate.Value.ToShortDateString() : "Kein Datum ausgewählt";
-            string uhrzeit = UhrzeitTextBox.SelectedItem != null ? (UhrzeitTextBox.SelectedItem as ComboBoxItem).Content.ToString() : "Keine Uhrzeit ausgewählt";
+            string stunden = StundenComboBox.SelectedItem != null ? (StundenComboBox.SelectedItem as ComboBoxItem).Content.ToString() : "00";
+            string minuten = MinutenComboBox.SelectedItem != null ? (MinutenComboBox.SelectedItem as ComboBoxItem).Content.ToString() : "00";
+            string uhrzeit = $"{stunden}:{minuten}";
 
-            ErgebnisTextBox.Text = $"Grund: {grund}\nDatum: {datum}\nUhrzeit: {uhrzeit}";
+            if (DateTime.TryParse(uhrzeit, out DateTime parsedTime))
+            {
+                var termin = new Termin
+                {
+                    Grund = grund,
+                    Datum = datum,
+                    Uhrzeit = uhrzeit,
+                    Zeitpunkt = DatumTextBox.SelectedDate.Value.Add(parsedTime.TimeOfDay)
+                };
+
+                Termine.Add(termin);
+            }
+            else
+            {
+                MessageBox.Show("Bitte geben Sie eine gültige Uhrzeit ein.");
+            }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            GrundTextBox.Text = "Grund";
-            GrundTextBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
-            DatumTextBox.SelectedDate = null;
-            UhrzeitTextBox.SelectedItem = null;
-            ErgebnisTextBox.Text = string.Empty;
+            if (ErgebnisListBox.SelectedItem is Termin selectedTermin)
+            {
+                Termine.Remove(selectedTermin);
+            }
         }
+
+        private void StartReminderCheck()
+        {
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            foreach (var termin in Termine)
+            {
+                if (DateTime.Now > termin.Zeitpunkt)
+                {
+                    termin.Background = new SolidColorBrush(Colors.Red);
+                    if (!termin.AlarmTriggered)
+                    {
+                        MessageBox.Show($"Erinnerung: {termin.Grund} um {termin.Uhrzeit} am {termin.Datum}");
+                        termin.AlarmTriggered = true;
+                    }
+                }
+                else if (DateTime.Now.AddMinutes(5) > termin.Zeitpunkt)
+                {
+                    termin.Background = new SolidColorBrush(Colors.Yellow);
+                }
+                else
+                {
+                    termin.Background = new SolidColorBrush(Colors.Green);
+                }
+            }
+        }
+    }
+
+    public class Termin
+    {
+        public string Grund { get; set; }
+        public string Datum { get; set; }
+        public string Uhrzeit { get; set; }
+        public DateTime Zeitpunkt { get; set; }
+        public Brush Background { get; set; } = new SolidColorBrush(Colors.Green);
+        public bool AlarmTriggered { get; set; } = false;
     }
 }
