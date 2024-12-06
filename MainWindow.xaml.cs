@@ -48,6 +48,41 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            // Moderne Animation beim Klicken des Buttons
+            Button addButton = sender as Button;
+            if (addButton == null) return;
+
+            DoubleAnimation scaleUpAnimation = new DoubleAnimation(1, 1.3, TimeSpan.FromSeconds(0.5));
+            DoubleAnimation scaleDownAnimation = new DoubleAnimation(1.3, 1, TimeSpan.FromSeconds(0.5));
+            DoubleAnimation opacityAnimation = new DoubleAnimation(1, 0.9, TimeSpan.FromSeconds(0.5));
+            DoubleAnimation opacityBackAnimation = new DoubleAnimation(0.9, 1, TimeSpan.FromSeconds(0.5));
+
+            ScaleTransform scaleTransform = new ScaleTransform();
+            addButton.RenderTransform = scaleTransform;
+            addButton.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            Storyboard storyboard = new Storyboard();
+            storyboard.Children.Add(scaleUpAnimation);
+            storyboard.Children.Add(scaleDownAnimation);
+            storyboard.Children.Add(opacityAnimation);
+            storyboard.Children.Add(opacityBackAnimation);
+
+            Storyboard.SetTarget(scaleUpAnimation, addButton);
+            Storyboard.SetTargetProperty(scaleUpAnimation, new PropertyPath("RenderTransform.ScaleX"));
+            Storyboard.SetTargetProperty(scaleUpAnimation, new PropertyPath("RenderTransform.ScaleY"));
+
+            Storyboard.SetTarget(scaleDownAnimation, addButton);
+            Storyboard.SetTargetProperty(scaleDownAnimation, new PropertyPath("RenderTransform.ScaleX"));
+            Storyboard.SetTargetProperty(scaleDownAnimation, new PropertyPath("RenderTransform.ScaleY"));
+
+            Storyboard.SetTarget(opacityAnimation, addButton);
+            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
+
+            Storyboard.SetTarget(opacityBackAnimation, addButton);
+            Storyboard.SetTargetProperty(opacityBackAnimation, new PropertyPath("Opacity"));
+
+            storyboard.Begin();
+
             if (GrundTextBox.Text == "Grund")
             {
                 MessageBox.Show("Bitte geben Sie einen Grund ein.");
@@ -90,6 +125,7 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            
             if (ErgebnisListBox.SelectedItem is Termin selectedTermin)
             {
                 Termine.Remove(selectedTermin);
