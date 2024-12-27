@@ -1,97 +1,223 @@
 ﻿<Window x:Class="Meine_Erinnerungs_app.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Meine_Erinnerungs_app"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="900">
+        Title="Erinnerungs-App" Height="850" Width="900">
+    <!-- Hintergrund -->
     <Window.Background>
-        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FF0D47A1" Offset="0.0"/>
-            <GradientStop Color="#FF1976D2" Offset="1.0"/>
-        </LinearGradientBrush>
+        <SolidColorBrush Color="#FFFFFF"/>
     </Window.Background>
     <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,45,0,0">
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="0,45,0,0">
+            <!-- StackPanel mit Farbverlauf und 3D-Effekt -->
             <StackPanel.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="Black"/>
-                    <GradientStop Color="#FF009AFE" Offset="1"/>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#F0F0F0" Offset="0.0"/>
+                    <GradientStop Color="#D0D0D0" Offset="1.0"/>
                 </LinearGradientBrush>
             </StackPanel.Background>
-            <TextBox Name="GrundTextBox" Width="300" Height="40" Margin="10" Text="Grund" Foreground="Gray" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Gray" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
-            <DatePicker Name="DatumTextBox" Width="300" Height="40" Margin="10" SelectedDateChanged="DatumTextBox_SelectedDateChanged" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <StackPanel.Effect>
+                <DropShadowEffect BlurRadius="5"
+                                  ShadowDepth="2"
+                                  Opacity="0.5"/>
+            </StackPanel.Effect>
+
+            <!-- GrundTextBox -->
+            <TextBox x:Name="GrundTextBox"
+                     Width="300"
+                     Height="40"
+                     Margin="10"
+                     Text="Bitte Begründung eingeben"
+                     Foreground="#333333"
+                     FontWeight="Normal"
+                     FontFamily="Segoe UI"
+                     FontSize="14"
+                     TextAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     BorderBrush="#CCCCCC"
+                     BorderThickness="1"
+                     Background="#FFFFFF"
+                     GotFocus="GrundTextBox_GotFocus"
+                     LostFocus="GrundTextBox_LostFocus"
+                     TextChanged="GrundTextBox_TextChanged"/>
+
+            <!-- DatumTextBox (DatePicker) -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
-                <ComboBox Name="StundenComboBox" Width="140" Height="40" Margin="5" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1">
-                    <ComboBoxItem Content="00" />
-                    <ComboBoxItem Content="01" />
-                    <ComboBoxItem Content="02" />
-                    <ComboBoxItem Content="03" />
-                    <ComboBoxItem Content="04" />
-                    <ComboBoxItem Content="05" />
-                    <ComboBoxItem Content="06" />
-                    <ComboBoxItem Content="07" />
-                    <ComboBoxItem Content="08" />
-                    <ComboBoxItem Content="09" />
-                    <ComboBoxItem Content="10" />
-                    <ComboBoxItem Content="11" />
-                    <ComboBoxItem Content="12" />
-                    <ComboBoxItem Content="13" />
-                    <ComboBoxItem Content="14" />
-                    <ComboBoxItem Content="15" />
-                    <ComboBoxItem Content="16" />
-                    <ComboBoxItem Content="17" />
-                    <ComboBoxItem Content="18" />
-                    <ComboBoxItem Content="19" />
-                    <ComboBoxItem Content="20" />
-                    <ComboBoxItem Content="21" />
-                    <ComboBoxItem Content="22" />
-                    <ComboBoxItem Content="23" />
-                </ComboBox>
-                <TextBlock Text=":" VerticalAlignment="Center" FontSize="20" Margin="5"/>
-                <ComboBox Name="MinutenComboBox" Width="140" Height="40" Margin="5" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1">
-                    <ComboBoxItem Content="00" />
-                    <ComboBoxItem Content="05" />
-                    <ComboBoxItem Content="10" />
-                    <ComboBoxItem Content="15" />
-                    <ComboBoxItem Content="20" />
-                    <ComboBoxItem Content="25" />
-                    <ComboBoxItem Content="30" />
-                    <ComboBoxItem Content="35" />
-                    <ComboBoxItem Content="40" />
-                    <ComboBoxItem Content="45" />
-                    <ComboBoxItem Content="50" />
-                    <ComboBoxItem Content="55" />
-                </ComboBox>
+                <DatePicker x:Name="DatumTextBox"
+                            Width="200"
+                            Height="40"
+                            Margin="5"
+                            SelectedDateChanged="DatumTextBox_SelectedDateChanged"
+                            Background="#FFFFFF"
+                            BorderBrush="#CCCCCC"
+                            BorderThickness="1"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            FontFamily="Segoe UI"
+                            Foreground="#333333"/>
+                <Button Content="Heute"
+                        Width="80"
+                        Height="40"
+                        Margin="5"
+                        Click="HeuteButton_Click"
+                        Background="#1E90FF"
+                        Foreground="#FFFFFF"
+                        FontWeight="Bold"
+                        BorderBrush="#1E90FF"
+                        BorderThickness="1">
+                    <Button.Effect>
+                        <DropShadowEffect/>
+                    </Button.Effect>
+                </Button>
             </StackPanel>
-            <Button Name="ConfirmButton" Content="TERMIN BESTÄTIGEN!" Width="150" Height="60" Margin="10" Click="Button_Click" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
+
+            <!-- Zeit-Auswahl -->
+            <ComboBox x:Name="ZeitComboBox"
+                      Width="300"
+                      Height="40"
+                      Margin="10"
+                      Background="#FFFFFF"
+                      BorderBrush="#CCCCCC"
+                      BorderThickness="1"
+                      Foreground="#333333"
+                      FontFamily="Segoe UI"
+                      IsEditable="True"
+                      IsReadOnly="True"
+                      PreviewMouseDown="ZeitComboBox_PreviewMouseDown">
+                <ComboBoxItem Content="00:00"/>
+                <ComboBoxItem Content="00:30"/>
+                <ComboBoxItem Content="01:00"/>
+                <ComboBoxItem Content="01:30"/>
+                <ComboBoxItem Content="02:00"/>
+                <ComboBoxItem Content="02:30"/>
+                <ComboBoxItem Content="03:00"/>
+                <ComboBoxItem Content="03:30"/>
+                <ComboBoxItem Content="04:00"/>
+                <ComboBoxItem Content="04:30"/>
+                <ComboBoxItem Content="05:00"/>
+                <ComboBoxItem Content="05:30"/>
+                <ComboBoxItem Content="06:00"/>
+                <ComboBoxItem Content="06:30"/>
+                <ComboBoxItem Content="07:00"/>
+                <ComboBoxItem Content="07:30"/>
+                <ComboBoxItem Content="08:00"/>
+                <ComboBoxItem Content="08:30"/>
+                <ComboBoxItem Content="09:00"/>
+                <ComboBoxItem Content="09:30"/>
+                <ComboBoxItem Content="10:00"/>
+                <ComboBoxItem Content="10:30"/>
+                <ComboBoxItem Content="11:00"/>
+                <ComboBoxItem Content="11:30"/>
+                <ComboBoxItem Content="12:00"/>
+                <ComboBoxItem Content="12:30"/>
+                <ComboBoxItem Content="13:00"/>
+                <ComboBoxItem Content="13:30"/>
+                <ComboBoxItem Content="14:00"/>
+                <ComboBoxItem Content="14:30"/>
+                <ComboBoxItem Content="15:00"/>
+                <ComboBoxItem Content="15:30"/>
+                <ComboBoxItem Content="16:00"/>
+                <ComboBoxItem Content="16:30"/>
+                <ComboBoxItem Content="17:00"/>
+                <ComboBoxItem Content="17:30"/>
+                <ComboBoxItem Content="18:00"/>
+                <ComboBoxItem Content="18:30"/>
+                <ComboBoxItem Content="19:00"/>
+                <ComboBoxItem Content="19:30"/>
+                <ComboBoxItem Content="20:00"/>
+                <ComboBoxItem Content="20:30"/>
+                <ComboBoxItem Content="21:00"/>
+                <ComboBoxItem Content="21:30"/>
+                <ComboBoxItem Content="22:00"/>
+                <ComboBoxItem Content="22:30"/>
+                <ComboBoxItem Content="23:00"/>
+                <ComboBoxItem Content="23:30"/>
+            </ComboBox>
+
+            <!-- ConfirmButton -->
+            <Button x:Name="ConfirmButton"
+                    Content="TERMIN BESTÄTIGEN!"
+                    Width="150"
+                    Height="60"
+                    Margin="10"
+                    Click="Button_Click"
+                    Background="#1E90FF"
+                    Foreground="#FFFFFF"
+                    FontWeight="Bold"
+                    BorderBrush="#1E90FF"
+                    BorderThickness="1">
                 <Button.Effect>
                     <DropShadowEffect/>
                 </Button.Effect>
             </Button>
-            <Button Name="DeleteButton" Content="Termin entfernen" Width="150" Height="60" Margin="20" Click="Button_Click_1" Background="#FF1E90FF" Foreground="White" FontWeight="Bold" IsEnabled="False">
+
+            <!-- DeleteButton -->
+            <Button x:Name="DeleteButton"
+                    Content="Termin entfernen"
+                    Width="150"
+                    Height="60"
+                    Margin="20"
+                    Click="Button_Click_1"
+                    Background="#1E90FF"
+                    Foreground="#000000"
+                    FontWeight="Bold"
+                    BorderBrush="#1E90FF"
+                    BorderThickness="1"
+                    IsEnabled="False">
                 <Button.Effect>
                     <DropShadowEffect/>
                 </Button.Effect>
             </Button>
         </StackPanel>
-        <ListBox Name="ErgebnisListBox" Width="700" Height="211" Margin="0,462,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" SelectionChanged="ErgebnisListBox_SelectionChanged" d:ItemsSource="{d:SampleData ItemCount=5}" BorderBrush="Black" BorderThickness="3" Background="DarkGray">
+
+        <!-- ErgebnisListBox -->
+        <ListBox x:Name="ErgebnisListBox"
+                 Width="700"
+                 Height="211"
+                 Margin="0,462,0,0"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Top"
+                 SelectionChanged="ErgebnisListBox_SelectionChanged"
+                 BorderBrush="#CCCCCC"
+                 BorderThickness="1"
+                 Background="#FFFFFF">
             <ListBox.Effect>
                 <DropShadowEffect/>
             </ListBox.Effect>
+            <!-- ItemTemplate -->
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="Gray" BorderThickness="3" Margin="2" Padding="10" Background="{Binding Background}" Width="658" HorizontalAlignment="Center">
+                    <Border BorderBrush="Gray"
+                            BorderThickness="1"
+                            Margin="2"
+                            Padding="10"
+                            Background="{Binding Background}"
+                            Width="658"
+                            HorizontalAlignment="Center">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Grund}" FontWeight="Bold" Grid.Column="0" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding Datum}" Grid.Column="1" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding Uhrzeit}" Grid.Column="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Grund}"
+                                       FontWeight="Bold"
+                                       Grid.Column="0"
+                                       HorizontalAlignment="Center"
+                                       Foreground="#333333"
+                                       FontFamily="Segoe UI"/>
+                            <TextBlock Text="{Binding Datum}"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Center"
+                                       Foreground="#333333"
+                                       FontFamily="Segoe UI"/>
+                            <TextBlock Text="{Binding Uhrzeit}"
+                                       Grid.Column="2"
+                                       HorizontalAlignment="Center"
+                                       Foreground="#333333"
+                                       FontFamily="Segoe UI"/>
                         </Grid>
                     </Border>
                 </DataTemplate>

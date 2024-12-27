@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -12,6 +13,10 @@ namespace Meine_Erinnerungs_app
     public partial class MainWindow : Window
     {
         public ObservableCollection<Termin> Termine { get; set; }
+        public string Stunden { get; private set; }
+        public string Minuten { get; private set; }
+        public Button TimeButton { get; private set; }
+        public object UhrzeitTextBox { get; internal set; }
 
         public MainWindow()
         {
@@ -24,7 +29,7 @@ namespace Meine_Erinnerungs_app
         private void RemovePlaceholderText(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            if (textBox != null && textBox.Text == "Grund")
+            if (textBox != null && textBox.Text == "Bitte Begründung eingeben")
             {
                 textBox.Text = "";
                 textBox.Foreground = new SolidColorBrush(Colors.Black);
@@ -36,14 +41,47 @@ namespace Meine_Erinnerungs_app
             TextBox textBox = sender as TextBox;
             if (textBox != null && string.IsNullOrWhiteSpace(textBox.Text))
             {
-                textBox.Text = "Grund";
-                textBox.Foreground = new SolidColorBrush(Colors.Gray);
+                textBox.Text = "Bitte Begründung eingeben";
+                textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
+        }
+
+        private void GrundTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            RemovePlaceholderText(sender, e);
+        }
+
+        private void GrundTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            AddPlaceholderText(sender, e);
         }
 
         private void DatumTextBox_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Optional: Hier können Sie zusätzliche Logik hinzufügen, wenn das Datum geändert wird
+            if (DatumTextBox.SelectedDate.HasValue && DatumTextBox.SelectedDate.Value.Date == DateTime.Today)
+            {
+                ZeitComboBox.Items.Clear();
+                DateTime now = DateTime.Now;
+                for (int hour = now.Hour; hour < 24; hour++)
+                {
+                    for (int minute = (hour == now.Hour ? now.Minute : 0); minute < 60; minute += 15)
+                    {
+                        ZeitComboBox.Items.Add(new ComboBoxItem { Content = new DateTime(1, 1, 1, hour, minute, 0).ToString("HH:mm") });
+                    }
+                }
+            }
+            else
+            {
+                // Füllen Sie die Zeit-ComboBox mit allen möglichen Zeiten
+                ZeitComboBox.Items.Clear();
+                for (int hour = 0; hour < 24; hour++)
+                {
+                    for (int minute = 0; minute < 60; minute += 15)
+                    {
+                        ZeitComboBox.Items.Add(new ComboBoxItem { Content = new DateTime(1, 1, 1, hour, minute, 0).ToString("HH:mm") });
+                    }
+                }
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -83,27 +121,30 @@ namespace Meine_Erinnerungs_app
 
             storyboard.Begin();
 
+            AddTermin();
+        }
+
+        private void AddTermin()
+        {
             if (GrundTextBox.Text == "Grund")
             {
-                MessageBox.Show("Bitte geben Sie einen Grund ein.");
+                MessageBox.Show("Grund fehlt!");
                 return;
             }
             if (!DatumTextBox.SelectedDate.HasValue)
             {
-                MessageBox.Show("Bitte geben Sie ein Datum ein.");
+                MessageBox.Show("Hey, das Datum fehlt!");
                 return;
             }
-            if (StundenComboBox.SelectedItem == null || MinutenComboBox.SelectedItem == null)
+            if (string.IsNullOrEmpty(ZeitComboBox.Text))
             {
-                MessageBox.Show("Bitte geben Sie eine Uhrzeit ein.");
+                MessageBox.Show("Die Uhrzeit fehlt auch noch!");
                 return;
             }
 
             string grund = GrundTextBox.Text;
             string datum = DatumTextBox.SelectedDate.HasValue ? DatumTextBox.SelectedDate.Value.ToShortDateString() : "Kein Datum ausgewählt";
-            string stunden = StundenComboBox.SelectedItem != null ? (StundenComboBox.SelectedItem as ComboBoxItem).Content.ToString() : "00";
-            string minuten = MinutenComboBox.SelectedItem != null ? (MinutenComboBox.SelectedItem as ComboBoxItem).Content.ToString() : "00";
-            string uhrzeit = $"{stunden}:{minuten}";
+            string uhrzeit = ZeitComboBox.Text;
 
             if (DateTime.TryParse(uhrzeit, out DateTime parsedTime))
             {
@@ -125,7 +166,6 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            
             if (ErgebnisListBox.SelectedItem is Termin selectedTermin)
             {
                 Termine.Remove(selectedTermin);
@@ -316,19 +356,77 @@ namespace Meine_Erinnerungs_app
                 DeleteButton.IsEnabled = false;
             }
         }
-    }
 
-    public class Termin
-    {
-        public string Grund { get; set; }
-        public string Datum { get; set; }
-        public string Uhrzeit { get; set; }
-        public DateTime Zeitpunkt { get; set; }
-        public SolidColorBrush Background { get; set; } = new SolidColorBrush(Colors.Green);
-        public bool AlarmTriggered { get; set; } = false;
-        public bool SixtyMinutesWarning { get; set; } = false;
-        public bool ThirtyMinutesWarning { get; set; } = false;
-        public bool FifteenMinutesWarning { get; set; } = false;
-        public bool FiveMinutesWarning { get; set; } = false;
+        private void GrundTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void ZeitComboBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Öffnen Sie ein TimePicker-Fenster
+            TimePickerWindow timePicker = new TimePickerWindow();
+            timePicker.Owner = this; // Setzen Sie das Hauptfenster als Besitzer
+            if (timePicker.ShowDialog() == true)
+            {
+                // Holen Sie sich die ausgewählte Zeit
+                DateTime selectedTime = timePicker.SelectedTime;
+
+                // Setzen Sie die Zeit für den Termin
+                ZeitComboBox.Text = selectedTime.ToString("HH:mm");
+            }
+        }
+        private void ConfirmButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (GrundTextBox.Text == "Grund")
+            {
+                MessageBox.Show("Bitte geben Sie einen Grund ein.");
+                return;
+            }
+            if (!DatumTextBox.SelectedDate.HasValue)
+            {
+                MessageBox.Show("Bitte geben Sie ein Datum ein.");
+                return;
+            }
+            if (ZeitComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Bitte geben Sie eine Uhrzeit ein.");
+                return;
+            }
+
+            string grund = GrundTextBox.Text;
+            string datum = DatumTextBox.SelectedDate.HasValue ? DatumTextBox.SelectedDate.Value.ToShortDateString() : "Kein Datum ausgewählt";
+            string uhrzeit = ZeitComboBox.SelectedItem != null ? (ZeitComboBox.SelectedItem as ComboBoxItem).Content.ToString() : "00:00";
+
+            if (DateTime.TryParse(uhrzeit, out DateTime parsedTime))
+            {
+                var termin = new Termin
+                {
+                    Grund = grund,
+                    Datum = datum,
+                    Uhrzeit = uhrzeit,
+                    Zeitpunkt = DatumTextBox.SelectedDate.Value.Add(parsedTime.TimeOfDay)
+                };
+
+                Termine.Add(termin);
+            }
+            else
+            {
+                MessageBox.Show("Bitte geben Sie eine gültige Uhrzeit ein.");
+            }
+        }
+
+        private void HeuteButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Heutiges Datum einstellen und anzeigen
+            DatumTextBox.SelectedDate = DateTime.Today;
+
+        }
+        public void UpdateZeitComboBox(DateTime selectedTime)
+        {
+            ZeitComboBox.Items.Clear();
+            ZeitComboBox.Items.Add(selectedTime.ToString("HH:mm"));
+            ZeitComboBox.SelectedIndex = 0;
+        }
     }
 }
