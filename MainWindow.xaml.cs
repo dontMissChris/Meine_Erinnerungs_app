@@ -148,12 +148,19 @@ namespace Meine_Erinnerungs_app
 
             if (DateTime.TryParse(uhrzeit, out DateTime parsedTime))
             {
+                DateTime selectedDateTime = DatumTextBox.SelectedDate.Value.Add(parsedTime.TimeOfDay);
+                if (selectedDateTime < DateTime.Now)
+                {
+                    MessageBox.Show("Die ausgewählte Uhrzeit liegt in der Vergangenheit!");
+                    return;
+                }
+
                 var termin = new Termin
                 {
                     Grund = grund,
                     Datum = datum,
                     Uhrzeit = uhrzeit,
-                    Zeitpunkt = DatumTextBox.SelectedDate.Value.Add(parsedTime.TimeOfDay)
+                    Zeitpunkt = selectedDateTime
                 };
 
                 Termine.Add(termin);
