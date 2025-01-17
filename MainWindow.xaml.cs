@@ -15,8 +15,6 @@ namespace Meine_Erinnerungs_app
         public ObservableCollection<Termin> Termine { get; set; }
         public string Stunden { get; private set; }
         public string Minuten { get; private set; }
-        public Button TimeButton { get; private set; }
-        public object UhrzeitTextBox { get; internal set; }
 
         public MainWindow()
         {
@@ -335,6 +333,15 @@ namespace Meine_Erinnerungs_app
                 {
                     DoubleAnimation scaleAnimation = new DoubleAnimation(1, 1.2, TimeSpan.FromSeconds(0.5));
                     DoubleAnimation opacityAnimation = new DoubleAnimation(1, 0.8, TimeSpan.FromSeconds(0.5));
+                    // rot leuchtendes Blinken
+                    ColorAnimation colorAnimation = new ColorAnimation
+                    {
+                        From = Colors.Red,
+                        To = Colors.Transparent,
+                        Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                        AutoReverse = true,
+                        RepeatBehavior = RepeatBehavior.Forever
+                    };
                     ScaleTransform scaleTransform = new ScaleTransform();
                     listBoxItem.RenderTransform = scaleTransform;
                     listBoxItem.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -383,6 +390,7 @@ namespace Meine_Erinnerungs_app
                 ZeitComboBox.Text = selectedTime.ToString("HH:mm");
             }
         }
+
         private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
             if (GrundTextBox.Text == "Grund")
@@ -427,13 +435,67 @@ namespace Meine_Erinnerungs_app
         {
             // Heutiges Datum einstellen und anzeigen
             DatumTextBox.SelectedDate = DateTime.Today;
-
         }
+
         public void UpdateZeitComboBox(DateTime selectedTime)
         {
             ZeitComboBox.Items.Clear();
             ZeitComboBox.Items.Add(selectedTime.ToString("HH:mm"));
             ZeitComboBox.SelectedIndex = 0;
         }
+
+        private void ZeitComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Zeit Digital horizontal und vertikal zentriert anzeigen
+            if (ZeitComboBox.SelectedItem != null)
+            {
+                ZeitComboBox.HorizontalContentAlignment = HorizontalAlignment.Center;
+                ZeitComboBox.VerticalContentAlignment = VerticalAlignment.Center;
+            }
+
+            if (ZeitComboBox.SelectedItem != null)
+            {
+                string selectedTime;
+                if (ZeitComboBox.SelectedItem is ComboBoxItem comboBoxItem)
+                {
+                    selectedTime = comboBoxItem.Content.ToString();
+                }
+                else
+                {
+                    selectedTime = ZeitComboBox.SelectedItem.ToString();
+                }
+                Stunden = selectedTime.Split(':')[0];
+                Minuten = selectedTime.Split(':')[1];
+            }
+            else
+            {
+                Stunden = DateTime.Now.Hour.ToString("D2");
+                Minuten = DateTime.Now.Minute.ToString("D2");
+                ZeitComboBox.Items.Add($"{Stunden}:{Minuten}");
+                ZeitComboBox.SelectedIndex = 0;
+            }
+            ZeitComboBox.HorizontalContentAlignment = HorizontalAlignment.Center;
+        }
+
+        // "MainWindow" enthält keine Definition für "ZeitComboBox_GotFocus", und es konnte keine zugängliche ZeitComboBox_GotFocus-Erweiterungsmethode gefunden werden
+        private void ZeitComboBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (ZeitComboBox.Text == "Eine UHRZEIT wird noch benötigt!")
+            {
+                ZeitComboBox.Text = "";
+                ZeitComboBox.Foreground = new SolidColorBrush(Colors.Black);
+            }
+        }
+
+        private void ZeitComboBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(ZeitComboBox.Text))
+            {
+                ZeitComboBox.Text = "Eine UHRZEIT wird noch benötigt!";
+                ZeitComboBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
+            }
+        }
     }
 }
+        
+        
