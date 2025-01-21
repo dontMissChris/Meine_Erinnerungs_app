@@ -22,6 +22,13 @@ namespace Meine_Erinnerungs_app
             Termine = new ObservableCollection<Termin>();
             ErgebnisListBox.ItemsSource = Termine;
             StartReminderCheck();
+
+            // Setze die aktuelle Uhrzeit in die ZeitComboBox
+            ZeitComboBox.Text = DateTime.Now.ToString("HH:mm");
+            // größere schrift in der ZeitComboBox
+            ZeitComboBox.FontSize = 20;
+            
+
         }
 
         private void RemovePlaceholderText(object sender, RoutedEventArgs e)
@@ -84,6 +91,8 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            //
+
             // Moderne Animation beim Klicken des Buttons
             Button addButton = sender as Button;
             if (addButton == null) return;
@@ -227,15 +236,7 @@ namespace Meine_Erinnerungs_app
                         termin.ThirtyMinutesWarning = true;
                     }
                 }
-                else if (timeUntilTermin <= TimeSpan.FromMinutes(60))
-                {
-                    termin.Background = new SolidColorBrush(Colors.Yellow);
-                    if (!termin.SixtyMinutesWarning)
-                    {
-                        ShowPopup($"Erinnerung: {termin.Grund} in 60 Minuten");
-                        termin.SixtyMinutesWarning = true;
-                    }
-                }
+                
                 else
                 {
                     termin.Background = new SolidColorBrush(Colors.Green);
@@ -475,15 +476,28 @@ namespace Meine_Erinnerungs_app
                 ZeitComboBox.SelectedIndex = 0;
             }
             ZeitComboBox.HorizontalContentAlignment = HorizontalAlignment.Center;
+
+            // Schriftgröße der ausgewählten Uhrzeit vergrößern
+            ZeitComboBox.FontSize = 20;
         }
 
         // "MainWindow" enthält keine Definition für "ZeitComboBox_GotFocus", und es konnte keine zugängliche ZeitComboBox_GotFocus-Erweiterungsmethode gefunden werden
         private void ZeitComboBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (ZeitComboBox.Text == "Eine UHRZEIT wird noch benötigt!")
+            // Setze die aktuelle Uhrzeit in der ZeitComboBox
+            DateTime now = DateTime.Now;
+            ZeitComboBox.Text = now.ToString("HH:mm");
+
+            // Öffnen Sie ein TimePicker-Fenster
+            TimePickerWindow timePicker = new TimePickerWindow();
+            timePicker.Owner = this; // Setzen Sie das Hauptfenster als Besitzer
+            if (timePicker.ShowDialog() == true)
             {
-                ZeitComboBox.Text = "";
-                ZeitComboBox.Foreground = new SolidColorBrush(Colors.Black);
+                // Holen Sie sich die ausgewählte Zeit
+                DateTime selectedTime = timePicker.SelectedTime;
+
+                // Setzen Sie die Zeit für den Termin
+                ZeitComboBox.Text = selectedTime.ToString("HH:mm");
             }
         }
 
@@ -491,10 +505,16 @@ namespace Meine_Erinnerungs_app
         {
             if (string.IsNullOrWhiteSpace(ZeitComboBox.Text))
             {
-                ZeitComboBox.Text = "Eine UHRZEIT wird noch benötigt!";
+                ZeitComboBox.Text = "- - - Wecker stellen - - - ";
                 ZeitComboBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
+                // fade away text
+                ZeitComboBox.BeginAnimation(TextBox.OpacityProperty, null);
+                ZeitComboBox.Opacity = 1;
+                
+
             }
         }
+        
     }
 }
         

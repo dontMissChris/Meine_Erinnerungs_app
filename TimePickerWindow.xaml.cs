@@ -55,7 +55,7 @@ namespace Meine_Erinnerungs_app
         {
             if (HoursComboBox.SelectedItem != null && MinutesComboBox.SelectedItem != null)
             {
-                // Extract the content of the ComboBoxItem and convert it to an integer
+                
                 ComboBoxItem selectedHourItem = (ComboBoxItem)HoursComboBox.SelectedItem;
                 ComboBoxItem selectedMinuteItem = (ComboBoxItem)MinutesComboBox.SelectedItem;
 
@@ -63,7 +63,7 @@ namespace Meine_Erinnerungs_app
                 minutes = Convert.ToInt32(selectedMinuteItem.Content);
                 SelectedTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hours, minutes, 0);
 
-                // Update ZeitComboBox in MainWindow
+                
                 MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
                 mainWindow.UpdateZeitComboBox(SelectedTime);
 
@@ -75,7 +75,7 @@ namespace Meine_Erinnerungs_app
             }
         }
 
-        private void MinutesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void MinutesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) // Wenn Wert sich geändert hat
         {
             // 1-59 Minuten Darstellung in der ComboBox
             sbyte minute = 1;
@@ -88,7 +88,7 @@ namespace Meine_Erinnerungs_app
             }
         }
 
-        private void HoursComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void HoursComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) // Selection Changed heißt , dass sich der Wert geändert hat
         {
             // 1-23 Stunden Darstellung in der ComboBox
             sbyte hour = 1;
