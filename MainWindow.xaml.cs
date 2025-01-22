@@ -205,7 +205,7 @@ namespace Meine_Erinnerungs_app
                     termin.Background = new SolidColorBrush(Colors.Red);
                     if (!termin.AlarmTriggered)
                     {
-                        ShowPopup($"Erinnerung: {termin.Grund} um {termin.Uhrzeit} am {termin.Datum}");
+                        ShowPopup($"Erinnerung: {termin.Grund} um {termin.Uhrzeit}");
                         termin.AlarmTriggered = true;
                     }
                 }
@@ -255,7 +255,7 @@ namespace Meine_Erinnerungs_app
             {
                 From = Colors.Yellow,
                 To = Colors.Transparent,
-                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                Duration = new Duration(TimeSpan.FromSeconds(0.9)),
                 AutoReverse = true,
                 RepeatBehavior = RepeatBehavior.Forever
             };
@@ -332,8 +332,8 @@ namespace Meine_Erinnerungs_app
                 var listBoxItem = (ListBoxItem)ErgebnisListBox.ItemContainerGenerator.ContainerFromItem(selectedTermin);
                 if (listBoxItem != null)
                 {
-                    DoubleAnimation scaleAnimation = new DoubleAnimation(1, 1.2, TimeSpan.FromSeconds(0.5));
-                    DoubleAnimation opacityAnimation = new DoubleAnimation(1, 0.8, TimeSpan.FromSeconds(0.5));
+                    DoubleAnimation scaleAnimation = new DoubleAnimation(1, 1.2, TimeSpan.FromSeconds(0.2));
+                    DoubleAnimation opacityAnimation = new DoubleAnimation(1, 0.8, TimeSpan.FromSeconds(0.2));
                     // rot leuchtendes Blinken
                     ColorAnimation colorAnimation = new ColorAnimation
                     {
@@ -479,6 +479,9 @@ namespace Meine_Erinnerungs_app
 
             // Schriftgröße der ausgewählten Uhrzeit vergrößern
             ZeitComboBox.FontSize = 20;
+            // Schriftdicke der ausgewählten Uhrzeit ändern
+            ZeitComboBox.FontWeight = FontWeights.Bold;
+
         }
 
         // "MainWindow" enthält keine Definition für "ZeitComboBox_GotFocus", und es konnte keine zugängliche ZeitComboBox_GotFocus-Erweiterungsmethode gefunden werden
