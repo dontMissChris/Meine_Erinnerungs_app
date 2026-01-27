@@ -12,7 +12,7 @@ Diese Anwendung ermöglicht es Benutzern, wichtige Termine schnell und einfach z
 - **⏱️ Intelligente Erinnerungen**: Automatische Benachrichtigungen zu verschiedenen Zeitpunkten vor dem Termin
 - **🎨 Dynamische Farbcodierung**: Visuelle Statusanzeige durch farbliche Hinterlegung der Termine
   - 🟢 Grün: Mehr als 30 Minuten bis zum Termin
-  - 🟡 Gelb: 5 bis 30 Minuten bis zum Termin (mit Zwischenwarnungen bei 30, 15 und 5 Minuten)
+  - 🟡 Gelb: 30 Minuten oder weniger bis zum Termin (mit Benachrichtigungen bei 30, 15 und 5 Minuten)
   - 🔴 Rot: Termin ist fällig oder überschritten
 - **🔔 Mehrfache Warnungen**: Popup-Benachrichtigungen bei 30, 15 und 5 Minuten vor dem Termin
 - **📊 Terminübersicht**: Übersichtliche Darstellung aller gespeicherten Termine in einer ListBox
