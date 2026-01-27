@@ -9,8 +9,7 @@ Diese Anwendung ermöglicht es Benutzern, wichtige Termine schnell und einfach z
 ## ✨ Funktionen
 
 - **📝 Termin-Erfassung**: Eingabe von Grund, Datum und Uhrzeit für Termine
-- **🔔 Erinnerungsfunktion**: Aktivierung von Erinnerungen mit einem Klick
-- **🗑️ Löschen-Funktion**: Einfaches Entfernen von Terminen
+- **🔔 Bestätigungsfunktion**: Bestätigung der Termin-Eingabe mit visuellem Feedback
 - **🎨 Modernes UI-Design**: Ansprechendes Farbschema mit Gradient-Hintergrund
 - **💡 Platzhalter-Text**: Intelligente Textfelder mit automatischen Platzhaltern
 
@@ -39,8 +38,7 @@ Diese Anwendung ermöglicht es Benutzern, wichtige Termine schnell und einfach z
 1. Starten Sie die Anwendung
 2. Geben Sie den Grund für den Termin ein
 3. Tragen Sie Datum und Uhrzeit ein
-4. Klicken Sie auf "GO!", um die Erinnerung zu aktivieren
-5. Verwenden Sie "Löschen", um Termine zu entfernen
+4. Klicken Sie auf "GO!", um eine Bestätigung zu erhalten
 
 ## 📱 Benutzeroberfläche
 
