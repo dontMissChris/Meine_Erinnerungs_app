@@ -6,9 +6,9 @@ Eine moderne Windows-Desktopanwendung zur Verwaltung von Erinnerungen und Termin
 
 - **Intuitive Benutzeroberfläche** 🎨: Moderne WPF-Oberfläche mit elegantem Gradient-Design
 - **Termineingabe**: Einfache Erfassung von Ereignissen mit Grund, Datum und Uhrzeit
-- **Erinnerungsfunktion** ⏱️: Aktivierung von Erinnerungen für geplante Termine
-- **Verwaltungsfunktionen**: Löschen und Bearbeiten von Einträgen
+- **Erinnerungsaktivierung** ⏱️: Bestätigung und Aktivierung von Terminerinnerungen
 - **Visuelles Feedback** 🔔: Bestätigungsdialoge für Benutzeraktionen
+- **Intuitive Bedienung**: Automatische Placeholder-Text-Verwaltung für bessere Benutzerführung
 
 ## 🛠️ Technologie-Stack
 
@@ -41,10 +41,6 @@ Eine moderne Windows-Desktopanwendung zur Verwaltung von Erinnerungen und Termin
 4. Klicken Sie auf **GO!** um die Erinnerung zu aktivieren
 5. Eine Bestätigung wird angezeigt
 
-### Erinnerung löschen
-
-- Nutzen Sie die **Löschen**-Schaltfläche um Einträge zu entfernen
-
 ## 📊 Projektstruktur
 
 ```
@@ -67,7 +63,7 @@ Meine_Erinnerungs_app/
 
 ## 💡 Technische Besonderheiten
 
-- **Event-gesteuerte Architektur**: Saubere Trennung von UI und Logik
+- **Event-gesteuerte UI-Interaktionen**: Reaktive Benutzeroberfläche mit direktem Event-Handling
 - **Fokus-Management**: Intelligente Placeholder-Text-Verwaltung
 - **Responsive Design**: Anpassungsfähiges Layout für verschiedene Fenstergrößen
 
