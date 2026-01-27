@@ -13,10 +13,49 @@
         </LinearGradientBrush>
     </Window.Background>
     <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
-            <TextBox Width="200" Height="30" Margin="10" Text="Grund" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
-            <TextBox Width="200" Height="30" Margin="10" Text="Datum" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
-            <TextBox Width="200" Height="30" Margin="10" Text="Uhrzeit" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Liste der Termine mit ProgressBars -->
+        <ListView x:Name="TermineListView" Grid.Row="0" ItemsSource="{Binding Termine}" Margin="10">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{Binding BackgroundColor}" 
+                            BorderBrush="Gray" 
+                            BorderThickness="1" 
+                            CornerRadius="5" 
+                            Padding="10" 
+                            Margin="5">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Grund}" 
+                                       FontSize="16" 
+                                       FontWeight="Bold" 
+                                       Foreground="Black"/>
+                            <TextBlock Text="{Binding TerminZeitString}" 
+                                       FontSize="12" 
+                                       Foreground="DarkGray" 
+                                       Margin="0,5,0,5"/>
+                            <ProgressBar Value="{Binding Fortschritt}" 
+                                         Height="20" 
+                                         Minimum="0" 
+                                         Maximum="100">
+                                <ProgressBar.Foreground>
+                                    <Binding Path="ProgressBarColor"/>
+                                </ProgressBar.Foreground>
+                            </ProgressBar>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!-- Eingabebereich für neue Termine -->
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
+            <TextBox x:Name="GrundTextBox" Width="200" Height="30" Margin="10" Text="Grund" Foreground="Gray" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <TextBox x:Name="DatumTextBox" Width="200" Height="30" Margin="10" Text="Datum" Foreground="Gray" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <TextBox x:Name="UhrzeitTextBox" Width="200" Height="30" Margin="10" Text="Uhrzeit" Foreground="Gray" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
             <Button Content="GO!" Width="100" Height="50" Margin="10" Click="Button_Click" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
                 <Button.Effect>
                     <DropShadowEffect/>
