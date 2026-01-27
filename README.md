@@ -16,7 +16,7 @@ Diese Anwendung ermöglicht es Benutzern, wichtige Termine schnell und einfach z
 
 ## 🛠️ Technologie-Stack
 
-- **Framework**: .NET Framework 4.7.2
+- **Framework**: .NET Framework 4.8
 - **UI-Technologie**: Windows Presentation Foundation (WPF)
 - **Programmiersprache**: C#
 - **IDE**: Visual Studio
@@ -24,7 +24,7 @@ Diese Anwendung ermöglicht es Benutzern, wichtige Termine schnell und einfach z
 ## 📋 Voraussetzungen
 
 - Windows Betriebssystem
-- .NET Framework 4.7.2 oder höher
+- .NET Framework 4.8 oder höher
 - Visual Studio 2017 oder höher (für Entwicklung)
 
 ## 🚀 Installation
@@ -62,7 +62,3 @@ Dieses Projekt demonstriert Kenntnisse in:
 ## 📄 Lizenz
 
 Dieses Projekt wurde zu Lernzwecken entwickelt.
-
-## 👤 Kontakt
-
-Für Fragen oder Feedback können Sie gerne Kontakt aufnehmen.
