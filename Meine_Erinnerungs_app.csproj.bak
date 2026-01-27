@@ -92,9 +92,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AlarmWindow.xaml.cs">
-      <DependentUpon>AlarmWindow.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="AlarmWindow.xaml.cs">`r`n      <DependentUpon>AlarmWindow.xaml</DependentUpon>`r`n    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
