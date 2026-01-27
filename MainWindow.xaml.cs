@@ -26,6 +26,14 @@ namespace Meine_Erinnerungs_app
         public ObservableCollection<Termin> Termine { get; set; }
         private DispatcherTimer timer;
 
+        // Konstanten für Datum- und Zeitformate
+        private const string DateFormat = "dd.MM.yyyy";
+        private const string TimeFormat = "HH:mm";
+        private const string DateTimeFormat = DateFormat + " " + TimeFormat;
+        
+        // Konstante für maximale Minuten bis zum Termin (für Fortschrittsberechnung)
+        private const double MaxMinutenFuerFortschritt = 120; // 2 Stunden
+
         public MainWindow()
         {
             InitializeComponent();
@@ -85,7 +93,7 @@ namespace Meine_Erinnerungs_app
                     
                     DateTime terminZeit = DateTime.ParseExact(
                         datumStr + " " + uhrzeitStr,
-                        "dd.MM.yyyy HH:mm",
+                        DateTimeFormat,
                         CultureInfo.InvariantCulture);
 
                     var termin = new Termin
@@ -109,7 +117,7 @@ namespace Meine_Erinnerungs_app
                 }
                 catch (FormatException)
                 {
-                    MessageBox.Show("Bitte geben Sie das Datum im Format 'dd.MM.yyyy' und die Uhrzeit im Format 'HH:mm' ein.",
+                    MessageBox.Show($"Bitte geben Sie das Datum im Format '{DateFormat}' und die Uhrzeit im Format '{TimeFormat}' ein.",
                         "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -142,9 +150,8 @@ namespace Meine_Erinnerungs_app
                 double totalMinutes = differenz.TotalMinutes;
 
                 // Fortschritt berechnen (0-100%)
-                // Wir nehmen an, dass 2 Stunden vor dem Termin der Fortschritt bei 0% beginnt
-                double maxMinuten = 120; // 2 Stunden
-                double fortschritt = Math.Max(0, Math.Min(100, ((maxMinuten - totalMinutes) / maxMinuten) * 100));
+                // Wir nehmen an, dass MaxMinutenFuerFortschritt vor dem Termin der Fortschritt bei 0% beginnt
+                double fortschritt = Math.Max(0, Math.Min(100, ((MaxMinutenFuerFortschritt - totalMinutes) / MaxMinutenFuerFortschritt) * 100));
                 termin.Fortschritt = fortschritt;
 
                 // Farben basierend auf verbleibender Zeit setzen
