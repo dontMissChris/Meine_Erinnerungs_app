@@ -35,7 +35,7 @@ namespace Meine_Erinnerungs_app
             if (textBox != null && (textBox.Text == "Grund" || textBox.Text == "Datum" || textBox.Text == "Uhrzeit"))
             {
                 textBox.Text = "";
-                textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+                textBox.Foreground = Brushes.Black;
             }
         }
 
@@ -47,19 +47,29 @@ namespace Meine_Erinnerungs_app
                 if (textBox.Name == "GrundTextBox")
                 {
                     textBox.Text = "Grund";
-                    textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
+                    textBox.Foreground = Brushes.Gray;
                 }
                 else if (textBox.Name == "DatumTextBox")
                 {
                     textBox.Text = "Datum";
-                    textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
+                    textBox.Foreground = Brushes.Gray;
                 }
                 else if (textBox.Name == "UhrzeitTextBox")
                 {
                     textBox.Text = "Uhrzeit";
-                    textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
+                    textBox.Foreground = Brushes.Gray;
                 }
             }
+        }
+
+        private void ResetInputFields()
+        {
+            GrundTextBox.Text = "Grund";
+            GrundTextBox.Foreground = Brushes.Gray;
+            DatumTextBox.Text = "Datum";
+            DatumTextBox.Foreground = Brushes.Gray;
+            UhrzeitTextBox.Text = "Uhrzeit";
+            UhrzeitTextBox.Foreground = Brushes.Gray;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -76,12 +86,7 @@ namespace Meine_Erinnerungs_app
                 termine.Add(new Termin { Grund = grund, Datum = datum, Uhrzeit = uhrzeit });
                 
                 // Felder zurücksetzen
-                GrundTextBox.Text = "Grund";
-                GrundTextBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
-                DatumTextBox.Text = "Datum";
-                DatumTextBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
-                UhrzeitTextBox.Text = "Uhrzeit";
-                UhrzeitTextBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
+                ResetInputFields();
                 
                 MessageBox.Show("Erinnerung hinzugefügt!");
             }
