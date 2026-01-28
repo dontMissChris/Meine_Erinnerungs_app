@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Meine_Erinnerungs_app"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Meine Erinnerungen" Height="600" Width="900">
     <Window.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="#FF1E90FF" Offset="0.0"/>
@@ -13,20 +13,87 @@
         </LinearGradientBrush>
     </Window.Background>
     <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
-            <TextBox Width="200" Height="30" Margin="10" Text="Grund" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
-            <TextBox Width="200" Height="30" Margin="10" Text="Datum" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
-            <TextBox Width="200" Height="30" Margin="10" Text="Uhrzeit" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
-            <Button Content="GO!" Width="100" Height="50" Margin="10" Click="Button_Click" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
-                <Button.Effect>
-                    <DropShadowEffect/>
-                </Button.Effect>
-            </Button>
-            <Button Content="Löschen" Width="100" Height="50" Margin="20" Click="Button_Click_1" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
-                <Button.Effect>
-                    <DropShadowEffect/>
-                </Button.Effect>
-            </Button>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Liste der Termine -->
+        <ScrollViewer Grid.Row="0" Margin="20,20,20,10" VerticalScrollBarVisibility="Auto">
+            <ListBox x:Name="TerminListe" Background="Transparent" BorderThickness="0">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="ItemBorder" 
+                                            Background="#FFFFFF" 
+                                            BorderBrush="#FF1E90FF" 
+                                            BorderThickness="2" 
+                                            CornerRadius="10" 
+                                            Margin="5" 
+                                            Padding="15">
+                                        <Border.RenderTransform>
+                                            <ScaleTransform/>
+                                        </Border.RenderTransform>
+                                        <Border.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="ItemBorder"
+                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                       To="1.05" Duration="0:0:0.2"/>
+                                                        <DoubleAnimation Storyboard.TargetName="ItemBorder"
+                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                       To="1.05" Duration="0:0:0.2"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="ItemBorder"
+                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                       To="1.0" Duration="0:0:0.2"/>
+                                                        <DoubleAnimation Storyboard.TargetName="ItemBorder"
+                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                       To="1.0" Duration="0:0:0.2"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Border.Triggers>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Grund}" FontWeight="Bold" FontSize="16" Foreground="#FF1E90FF"/>
+                                            <TextBlock Text="{Binding Datum}" FontSize="14" Foreground="#333333" Margin="0,5,0,0"/>
+                                            <TextBlock Text="{Binding Uhrzeit}" FontSize="14" Foreground="#666666"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </ScrollViewer>
+        
+        <!-- Eingabebereich -->
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
+            <TextBox x:Name="GrundTextBox" Width="300" Height="35" Margin="10" Text="Grund" Foreground="Gray" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <TextBox x:Name="DatumTextBox" Width="300" Height="35" Margin="10" Text="Datum" Foreground="Gray" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <TextBox x:Name="UhrzeitTextBox" Width="300" Height="35" Margin="10" Text="Uhrzeit" Foreground="Gray" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Hinzufügen" Width="120" Height="50" Margin="10" Click="Button_Click" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
+                    <Button.Effect>
+                        <DropShadowEffect/>
+                    </Button.Effect>
+                </Button>
+                <Button Content="Löschen" Width="120" Height="50" Margin="10" Click="Button_Click_1" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
+                    <Button.Effect>
+                        <DropShadowEffect/>
+                    </Button.Effect>
+                </Button>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

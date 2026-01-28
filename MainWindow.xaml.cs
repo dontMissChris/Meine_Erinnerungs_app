@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,12 @@ namespace Meine_Erinnerungs_app
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ObservableCollection<Termin> termine = new ObservableCollection<Termin>();
+
         public MainWindow()
         {
             InitializeComponent();
+            TerminListe.ItemsSource = termine;
         }
 
         private void RemovePlaceholderText(object sender, RoutedEventArgs e)
@@ -31,7 +35,7 @@ namespace Meine_Erinnerungs_app
             if (textBox != null && (textBox.Text == "Grund" || textBox.Text == "Datum" || textBox.Text == "Uhrzeit"))
             {
                 textBox.Text = "";
-                textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+                textBox.Foreground = Brushes.Black;
             }
         }
 
@@ -43,27 +47,74 @@ namespace Meine_Erinnerungs_app
                 if (textBox.Name == "GrundTextBox")
                 {
                     textBox.Text = "Grund";
+                    textBox.Foreground = Brushes.Gray;
                 }
                 else if (textBox.Name == "DatumTextBox")
                 {
                     textBox.Text = "Datum";
+                    textBox.Foreground = Brushes.Gray;
                 }
                 else if (textBox.Name == "UhrzeitTextBox")
                 {
                     textBox.Text = "Uhrzeit";
+                    textBox.Foreground = Brushes.Gray;
                 }
-                textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
             }
+        }
+
+        private void ResetInputFields()
+        {
+            GrundTextBox.Text = "Grund";
+            GrundTextBox.Foreground = Brushes.Gray;
+            DatumTextBox.Text = "Datum";
+            DatumTextBox.Foreground = Brushes.Gray;
+            UhrzeitTextBox.Text = "Uhrzeit";
+            UhrzeitTextBox.Foreground = Brushes.Gray;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ERINNERUNG SCHARF GESTELLT");
+            // Termin hinzufügen
+            string grund = GrundTextBox.Text;
+            string datum = DatumTextBox.Text;
+            string uhrzeit = UhrzeitTextBox.Text;
+
+            if (grund != "Grund" && !string.IsNullOrWhiteSpace(grund) &&
+                datum != "Datum" && !string.IsNullOrWhiteSpace(datum) &&
+                uhrzeit != "Uhrzeit" && !string.IsNullOrWhiteSpace(uhrzeit))
+            {
+                termine.Add(new Termin { Grund = grund, Datum = datum, Uhrzeit = uhrzeit });
+                
+                // Felder zurücksetzen
+                ResetInputFields();
+                
+                MessageBox.Show("Erinnerung hinzugefügt!");
+            }
+            else
+            {
+                MessageBox.Show("Bitte alle Felder ausfüllen!");
+            }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // Hier können Sie den Code zum Löschen der Erinnerung hinzufügen
+            // Ausgewählten Termin löschen
+            if (TerminListe.SelectedItem != null)
+            {
+                termine.Remove((Termin)TerminListe.SelectedItem);
+                MessageBox.Show("Erinnerung gelöscht!");
+            }
+            else
+            {
+                MessageBox.Show("Bitte wählen Sie einen Termin zum Löschen aus!");
+            }
         }
+    }
+
+    public class Termin
+    {
+        public string Grund { get; set; }
+        public string Datum { get; set; }
+        public string Uhrzeit { get; set; }
     }
 }
