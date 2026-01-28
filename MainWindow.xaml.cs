@@ -102,22 +102,30 @@ namespace Meine_Erinnerungs_app
                 return;
             }
 
-            var farbVerlaeufe = new[]
-            {
-                new { Bg = "#37474F", Border = "#263238" },
-                new { Bg = "#455A64", Border = "#37474F" },
-                new { Bg = "#546E7A", Border = "#455A64" },
-                new { Bg = "#4A5568", Border = "#2D3748" },
-                new { Bg = "#5C6B7A", Border = "#3D4857" },
-                new { Bg = "#3F4F5F", Border = "#2A3644" },
-            };
+            TimeSpan differenz = zeitpunkt - DateTime.Now;
+            Brush hintergrund = new SolidColorBrush(Color.FromArgb(200, 40, 40, 40));
+            Brush rand;
 
-            var farbPaar = farbVerlaeufe[Termine.Count % farbVerlaeufe.Length];
-            var pinsel = new LinearGradientBrush();
-            pinsel.StartPoint = new System.Windows.Point(0, 0);
-            pinsel.EndPoint = new System.Windows.Point(1, 1);
-            pinsel.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(farbPaar.Bg), 0));
-            pinsel.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(farbPaar.Border), 1));
+            if (differenz <= TimeSpan.FromMinutes(1))
+            {
+                rand = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
+            }
+            else if (differenz <= TimeSpan.FromMinutes(2))
+            {
+                rand = new SolidColorBrush(Color.FromArgb(255, 255, 80, 0));
+            }
+            else if (differenz <= TimeSpan.FromMinutes(3))
+            {
+                rand = new SolidColorBrush(Color.FromArgb(255, 255, 150, 0));
+            }
+            else if (differenz <= TimeSpan.FromMinutes(5))
+            {
+                rand = new SolidColorBrush(Color.FromArgb(255, 255, 200, 0));
+            }
+            else
+            {
+                rand = new SolidColorBrush(Color.FromArgb(180, 120, 120, 120));
+            }
 
             var termin = new Termin
             {
@@ -126,11 +134,14 @@ namespace Meine_Erinnerungs_app
                 Uhrzeit = $"{stunden:D2}:{minuten:D2}:{sekunden:D2}",
                 Zeitpunkt = zeitpunkt,
                 CreatedAt = DateTime.Now,
-                Background = pinsel,
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(farbPaar.Border))
+                Background = hintergrund,
+                BorderBrush = rand,
+                ProgressBarColor = new SolidColorBrush(Colors.LimeGreen),
+                ItemScale = 1.0
             };
 
             Termine.Add(termin);
+            TerminePruefen();
             GrundTextBox.Text = "";
             DatumTextBox.SelectedDate = null;
             stunden = 0;
@@ -258,98 +269,70 @@ namespace Meine_Erinnerungs_app
 
                 if (differenz <= TimeSpan.Zero)
                 {
-                    termin.Background = new SolidColorBrush(Colors.Gray);
-                    termin.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+                    termin.Background = new SolidColorBrush(Color.FromArgb(120, 80, 80, 80));
+                    termin.BorderBrush = new SolidColorBrush(Color.FromArgb(180, 100, 100, 100));
                     termin.ProgressBarColor = new SolidColorBrush(Colors.DarkGray);
                     termin.ShouldBlink = false;
                     termin.ShouldPulseText = false;
                     termin.ItemScale = 0.75;
                     if (!termin.AlarmTriggered)
                     {
-                        MessageBox.Show($"?? ALARM!\n\n{termin.Grund}\n\n{termin.Datum} um {termin.Uhrzeit}", 
-                                       "TERMIN JETZT!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        var toast = new ToastNotificationWindow($"?? {termin.Grund}\n\n{termin.Datum} um {termin.Uhrzeit}");
+                        toast.Show();
                         termin.AlarmTriggered = true;
                     }
                 }
-                else if (differenz <= TimeSpan.FromMinutes(5))
+                else if (differenz <= TimeSpan.FromMinutes(1))
                 {
-                    termin.Background = new SolidColorBrush(Colors.OrangeRed);
-                    termin.BorderBrush = new SolidColorBrush(Colors.Red);
-                    termin.ProgressBarColor = new SolidColorBrush(Colors.Red);
+                    termin.Background = new SolidColorBrush(Color.FromArgb(200, 40, 40, 40));
+                    termin.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
+                    termin.ProgressBarColor = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
+                    termin.ShouldBlink = true;
+                    termin.ShouldPulseText = true;
+                    termin.ItemScale = 1.5;
+                }
+                else if (differenz <= TimeSpan.FromMinutes(2))
+                {
+                    termin.Background = new SolidColorBrush(Color.FromArgb(200, 40, 40, 40));
+                    termin.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 80, 0));
+                    termin.ProgressBarColor = new SolidColorBrush(Color.FromArgb(255, 255, 80, 0));
                     termin.ShouldBlink = true;
                     termin.ShouldPulseText = true;
                     termin.ItemScale = 1.4;
-                    
-                    if (!termin.FiveMinutesWarning && differenz.TotalMinutes <= 5)
-                    {
-                        var warningWindow = MessageBox.Show($"? 5 MINUTEN!\n{termin.Grund}", $"Noch 5 Minuten bis {termin.Uhrzeit}");
-                        // removed
-                        termin.FiveMinutesWarning = true;
-                    }
                 }
-                else if (differenz <= TimeSpan.FromMinutes(10))
+                else if (differenz <= TimeSpan.FromMinutes(3))
                 {
-                    termin.Background = new SolidColorBrush(Colors.Orange);
-                    termin.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF8C00"));
-                    termin.ProgressBarColor = new SolidColorBrush(Colors.Orange);
+                    termin.Background = new SolidColorBrush(Color.FromArgb(200, 40, 40, 40));
+                    termin.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 150, 0));
+                    termin.ProgressBarColor = new SolidColorBrush(Color.FromArgb(255, 255, 150, 0));
                     termin.ShouldBlink = true;
                     termin.ShouldPulseText = true;
                     termin.ItemScale = 1.3;
-                    
-                    if (!termin.TenMinutesWarning && differenz.TotalMinutes <= 10)
-                    {
-                        var warningWindow = MessageBox.Show($"? 10 MINUTEN!\n{termin.Grund}", $"Noch 10 Minuten bis {termin.Uhrzeit}");
-                        // removed
-                        termin.TenMinutesWarning = true;
-                    }
                 }
-                else if (differenz <= TimeSpan.FromMinutes(15))
+                else if (differenz <= TimeSpan.FromMinutes(5))
                 {
-                    termin.Background = new SolidColorBrush(Colors.Orange);
-                    termin.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF8C00"));
-                    termin.ProgressBarColor = new SolidColorBrush(Colors.Orange);
+                    termin.Background = new SolidColorBrush(Color.FromArgb(200, 40, 40, 40));
+                    termin.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 200, 0));
+                    termin.ProgressBarColor = new SolidColorBrush(Color.FromArgb(255, 255, 200, 0));
                     termin.ShouldBlink = true;
                     termin.ShouldPulseText = true;
                     termin.ItemScale = 1.25;
                     
-                    if (!termin.FifteenMinutesWarning && differenz.TotalMinutes <= 15)
+                    if (!termin.FiveMinutesWarning && differenz.TotalMinutes <= 5)
                     {
-                        var warningWindow = MessageBox.Show($"? 15 MINUTEN!\n{termin.Grund}", $"Noch 15 Minuten bis {termin.Uhrzeit}");
-                        // removed
-                        termin.FifteenMinutesWarning = true;
+                        var toast = new ToastNotificationWindow($"? 5 MINUTEN!\n\n{termin.Grund}\n\nUm {termin.Uhrzeit}");
+                        toast.Show();
+                        termin.FiveMinutesWarning = true;
                     }
-                }
-                else if (differenz <= TimeSpan.FromMinutes(30))
-                {
-                    termin.Background = new SolidColorBrush(Colors.Gold);
-                    termin.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA500"));
-                    termin.ProgressBarColor = new SolidColorBrush(Colors.Gold);
-                    termin.ShouldBlink = true;
-                    termin.ShouldPulseText = false;
-                    termin.ItemScale = 1.15;
-                }
-                else if (differenz <= TimeSpan.FromHours(1))
-                {
-                    termin.Background = new SolidColorBrush(Colors.Gold);
-                    termin.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA500"));
-                    termin.ProgressBarColor = new SolidColorBrush(Colors.Gold);
-                    termin.ShouldBlink = false;
-                    termin.ShouldPulseText = false;
-                    termin.ItemScale = 1.0;
-                }
-                else if (differenz <= TimeSpan.FromHours(3))
-                {
-                    termin.ProgressBarColor = new SolidColorBrush(Colors.LimeGreen);
-                    termin.ShouldBlink = false;
-                    termin.ShouldPulseText = false;
-                    termin.ItemScale = 0.85;
                 }
                 else
                 {
+                    termin.Background = new SolidColorBrush(Color.FromArgb(200, 40, 40, 40));
+                    termin.BorderBrush = new SolidColorBrush(Color.FromArgb(180, 120, 120, 120));
                     termin.ProgressBarColor = new SolidColorBrush(Colors.LimeGreen);
                     termin.ShouldBlink = false;
                     termin.ShouldPulseText = false;
-                    termin.ItemScale = 0.7;
+                    termin.ItemScale = 1.0;
                 }
             }
             

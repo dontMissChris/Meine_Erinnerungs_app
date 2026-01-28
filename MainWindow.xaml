@@ -72,47 +72,28 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                            <Border x:Name="ItemBorder" Background="{Binding Background}" CornerRadius="12" Padding="20" Margin="0,0,0,12" 
-                                                    BorderBrush="{Binding BorderBrush}" BorderThickness="3" RenderTransformOrigin="0.5,0.5">
+                                            <Border x:Name="ItemBorder" Background="{Binding Background}" CornerRadius="12" Padding="20" Margin="0,0,0,25" 
+                                                    BorderBrush="{Binding BorderBrush}" BorderThickness="5" RenderTransformOrigin="0.5,0.5">
                                                 <Border.RenderTransform>
                                                     <ScaleTransform ScaleX="{Binding ItemScale}" ScaleY="{Binding ItemScale}"/>
                                                 </Border.RenderTransform>
+                                                <Border.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                               To="0.95" Duration="0:0:0.1" AutoReverse="True"/>
+                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                               To="0.95" Duration="0:0:0.1" AutoReverse="True"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Border.Triggers>
                                                 <Border.Effect>
                                                     <DropShadowEffect x:Name="ItemShadow" BlurRadius="4" ShadowDepth="2" Opacity="0.3" Color="#000000"/>
                                                 </Border.Effect>
                                                 <Border.Style>
                                                     <Style TargetType="Border">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ShouldBlink}" Value="True">
-                                                                <DataTrigger.EnterActions>
-                                                                    <BeginStoryboard Name="BlinkStoryboard">
-                                                                        <Storyboard RepeatBehavior="Forever">
-                                                                            <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" 
-                                                                                           To="#FFFF00" Duration="0:0:0.8" AutoReverse="True">
-                                                                                <ColorAnimation.EasingFunction>
-                                                                                    <SineEase EasingMode="EaseInOut"/>
-                                                                                </ColorAnimation.EasingFunction>
-                                                                            </ColorAnimation>
-                                                                            <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.BlurRadius)" 
-                                                                                           From="6" To="20" Duration="0:0:0.8" AutoReverse="True">
-                                                                                <DoubleAnimation.EasingFunction>
-                                                                                    <SineEase EasingMode="EaseInOut"/>
-                                                                                </DoubleAnimation.EasingFunction>
-                                                                            </DoubleAnimation>
-                                                                            <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.Opacity)" 
-                                                                                           From="0.4" To="0.9" Duration="0:0:0.8" AutoReverse="True">
-                                                                                <DoubleAnimation.EasingFunction>
-                                                                                    <SineEase EasingMode="EaseInOut"/>
-                                                                                </DoubleAnimation.EasingFunction>
-                                                                            </DoubleAnimation>
-                                                                        </Storyboard>
-                                                                    </BeginStoryboard>
-                                                                </DataTrigger.EnterActions>
-                                                                <DataTrigger.ExitActions>
-                                                                    <StopStoryboard BeginStoryboardName="BlinkStoryboard"/>
-                                                                </DataTrigger.ExitActions>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
                                                 <StackPanel HorizontalAlignment="Center">
