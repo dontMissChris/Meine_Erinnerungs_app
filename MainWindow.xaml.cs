@@ -58,51 +58,37 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            // Get TextBox values
-            var stackPanel = ((sender as Button).Parent as StackPanel);
-            var textBoxes = stackPanel.Children.OfType<TextBox>().ToList();
+            // Get values from named TextBoxes
+            string grund = GrundTextBox.Text;
+            string datum = DatumTextBox.Text;
+            string uhrzeit = UhrzeitTextBox.Text;
 
-            if (textBoxes.Count >= 3)
+            // Validate input
+            if (string.IsNullOrWhiteSpace(grund) || grund == "Grund" ||
+                string.IsNullOrWhiteSpace(datum) || datum == "Datum" ||
+                string.IsNullOrWhiteSpace(uhrzeit) || uhrzeit == "Uhrzeit")
             {
-                string grund = textBoxes[0].Text;
-                string datum = textBoxes[1].Text;
-                string uhrzeit = textBoxes[2].Text;
-
-                // Validate input
-                if (string.IsNullOrWhiteSpace(grund) || grund == "Grund" ||
-                    string.IsNullOrWhiteSpace(datum) || datum == "Datum" ||
-                    string.IsNullOrWhiteSpace(uhrzeit) || uhrzeit == "Uhrzeit")
-                {
-                    MessageBox.Show("Bitte füllen Sie alle Felder aus.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                // Create and show toast notification
-                string dateTimeText = $"{datum} um {uhrzeit}";
-                ToastNotificationWindow toast = new ToastNotificationWindow(grund, dateTimeText);
-                toast.Show();
+                MessageBox.Show("Bitte füllen Sie alle Felder aus.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
+
+            // Create and show toast notification
+            string dateTimeText = $"{datum} um {uhrzeit}";
+            ToastNotificationWindow toast = new ToastNotificationWindow(grund, dateTimeText);
+            toast.Show();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // Clear all text boxes
-            var stackPanel = ((sender as Button).Parent as StackPanel);
-            var textBoxes = stackPanel.Children.OfType<TextBox>().ToList();
+            // Clear all text boxes and trigger placeholder text reset
+            GrundTextBox.Text = "";
+            DatumTextBox.Text = "";
+            UhrzeitTextBox.Text = "";
 
-            foreach (var textBox in textBoxes)
-            {
-                textBox.Text = "";
-                textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
-            }
-
-            // Reset placeholder text
-            if (textBoxes.Count >= 3)
-            {
-                textBoxes[0].Text = "Grund";
-                textBoxes[1].Text = "Datum";
-                textBoxes[2].Text = "Uhrzeit";
-            }
+            // Trigger lost focus to restore placeholders
+            AddPlaceholderText(GrundTextBox, new RoutedEventArgs());
+            AddPlaceholderText(DatumTextBox, new RoutedEventArgs());
+            AddPlaceholderText(UhrzeitTextBox, new RoutedEventArgs());
         }
     }
 }

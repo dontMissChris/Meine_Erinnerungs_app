@@ -14,9 +14,9 @@
     </Window.Background>
     <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
-            <TextBox Width="200" Height="30" Margin="10" Text="Grund" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
-            <TextBox Width="200" Height="30" Margin="10" Text="Datum" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
-            <TextBox Width="200" Height="30" Margin="10" Text="Uhrzeit" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <TextBox Name="GrundTextBox" Width="200" Height="30" Margin="10" Text="Grund" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <TextBox Name="DatumTextBox" Width="200" Height="30" Margin="10" Text="Datum" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
+            <TextBox Name="UhrzeitTextBox" Width="200" Height="30" Margin="10" Text="Uhrzeit" Foreground="Black" FontWeight="Bold" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText" TextAlignment="Center" VerticalContentAlignment="Center" Background="#FFF0F0F0" BorderBrush="Gray" BorderThickness="1"/>
             <Button Content="GO!" Width="100" Height="50" Margin="10" Click="Button_Click" Background="#FF1E90FF" Foreground="White" FontWeight="Bold">
                 <Button.Effect>
                     <DropShadowEffect/>

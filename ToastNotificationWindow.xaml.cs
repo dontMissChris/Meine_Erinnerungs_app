@@ -17,9 +17,11 @@ namespace Meine_Erinnerungs_app
             ReasonTextBlock.Text = reason;
             DateTimeTextBlock.Text = dateTime;
 
-            // Position window at bottom-right corner
-            this.Left = SystemParameters.WorkArea.Width - this.Width - 10;
-            this.Top = SystemParameters.WorkArea.Height - this.Height - 10;
+            // Position window after it's loaded to ensure correct dimensions
+            this.Loaded += ToastNotificationWindow_Loaded;
+            
+            // Clean up timer when window closes
+            this.Closing += ToastNotificationWindow_Closing;
 
             // Auto-close after 5 seconds
             closeTimer = new DispatcherTimer();
@@ -32,9 +34,25 @@ namespace Meine_Erinnerungs_app
             closeTimer.Start();
         }
 
+        private void ToastNotificationWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Position window at bottom-right corner after it's fully loaded
+            this.Left = SystemParameters.WorkArea.Width - this.ActualWidth - 10;
+            this.Top = SystemParameters.WorkArea.Height - this.ActualHeight - 10;
+        }
+
+        private void ToastNotificationWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Ensure timer is stopped and disposed
+            if (closeTimer != null)
+            {
+                closeTimer.Stop();
+                closeTimer = null;
+            }
+        }
+
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            closeTimer.Stop();
             this.Close();
         }
     }
