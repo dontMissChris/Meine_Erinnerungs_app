@@ -77,32 +77,16 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                                 <Border.RenderTransform>
                                                     <ScaleTransform ScaleX="{Binding ItemScale}" ScaleY="{Binding ItemScale}"/>
                                                 </Border.RenderTransform>
-                                                <Border.Triggers>
-                                                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" 
-                                                                               To="0.95" Duration="0:0:0.1" AutoReverse="True"/>
-                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" 
-                                                                               To="0.95" Duration="0:0:0.1" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </EventTrigger>
-                                                </Border.Triggers>
                                                 <Border.Effect>
-                                                    <DropShadowEffect x:Name="ItemShadow" BlurRadius="4" ShadowDepth="2" Opacity="0.3" Color="#000000"/>
+                                                    <DropShadowEffect BlurRadius="4" ShadowDepth="2" Opacity="0.3" Color="#000000"/>
                                                 </Border.Effect>
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                    </Style>
-                                                </Border.Style>
                                                 <StackPanel HorizontalAlignment="Center">
                                                     <TextBlock Text="{Binding Grund}" FontSize="18" FontWeight="Normal" Foreground="#FFFFFF" 
                                                                Margin="0,0,0,8" TextAlignment="Center" TextWrapping="Wrap"/>
                                                     <TextBlock x:Name="CountdownTextBlock" Text="{Binding CountdownText}" FontSize="16" Foreground="#FFD700" 
                                                                FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,8" RenderTransformOrigin="0.5,0.5">
                                                         <TextBlock.RenderTransform>
-                                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                            <ScaleTransform x:Name="CountdownScale" ScaleX="1" ScaleY="1"/>
                                                         </TextBlock.RenderTransform>
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
@@ -144,6 +128,26 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Border>
+                                            <ControlTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding ShouldBlink}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard Name="BlinkStoryboard">
+                                                            <Storyboard RepeatBehavior="Forever">
+                                                                <ThicknessAnimation Storyboard.TargetName="ItemBorder" 
+                                                                                  Storyboard.TargetProperty="BorderThickness" 
+                                                                                  To="8" Duration="0:0:0.6" AutoReverse="True">
+                                                                    <ThicknessAnimation.EasingFunction>
+                                                                        <SineEase EasingMode="EaseInOut"/>
+                                                                    </ThicknessAnimation.EasingFunction>
+                                                                </ThicknessAnimation>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <StopStoryboard BeginStoryboardName="BlinkStoryboard"/>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
@@ -174,7 +178,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                                 <BeginStoryboard>
                                                     <Storyboard>
                                                         <ColorAnimation Storyboard.TargetName="ButtonBorder" 
-                                                                       Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                       Storyboard.TargetProperty="Background.Color"
                                                                        To="#EF5350" Duration="0:0:0.2"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>
@@ -183,7 +187,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                                 <BeginStoryboard>
                                                     <Storyboard>
                                                         <ColorAnimation Storyboard.TargetName="ButtonBorder" 
-                                                                       Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                       Storyboard.TargetProperty="Background.Color"
                                                                        To="#D32F2F" Duration="0:0:0.2"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>
@@ -224,7 +228,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                                 <BeginStoryboard>
                                                     <Storyboard>
                                                         <ColorAnimation Storyboard.TargetName="ButtonBorder" 
-                                                                       Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                       Storyboard.TargetProperty="Background.Color"
                                                                        To="#43A047" Duration="0:0:0.2"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>
@@ -233,7 +237,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                                 <BeginStoryboard>
                                                     <Storyboard>
                                                         <ColorAnimation Storyboard.TargetName="ButtonBorder" 
-                                                                       Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                       Storyboard.TargetProperty="Background.Color"
                                                                        To="#388E3C" Duration="0:0:0.2"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>

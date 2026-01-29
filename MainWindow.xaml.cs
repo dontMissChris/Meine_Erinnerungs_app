@@ -277,9 +277,21 @@ namespace Meine_Erinnerungs_app
                     termin.ItemScale = 0.75;
                     if (!termin.AlarmTriggered)
                     {
-                        var toast = new ToastNotificationWindow($"?? {termin.Grund}\n\n{termin.Datum} um {termin.Uhrzeit}");
-                        toast.Show();
-                        termin.AlarmTriggered = true;
+                        termin.AlarmTriggered = true; // Sofort markieren um Mehrfach-Trigger zu vermeiden
+                        
+                        // Toast mit Verzögerung erstellen, damit MainWindow zuerst fertig wird
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            try
+                            {
+                                var toast = new ToastNotificationWindow($"? {termin.Grund}\n\n{termin.Datum} um {termin.Uhrzeit}");
+                                toast.Show();
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Toast-Anzeige-Fehler: {ex.Message}");
+                            }
+                        }), DispatcherPriority.Background);
                     }
                 }
                 else if (differenz <= TimeSpan.FromMinutes(1))
@@ -320,9 +332,20 @@ namespace Meine_Erinnerungs_app
                     
                     if (!termin.FiveMinutesWarning && differenz.TotalMinutes <= 5)
                     {
-                        var toast = new ToastNotificationWindow($"? 5 MINUTEN!\n\n{termin.Grund}\n\nUm {termin.Uhrzeit}");
-                        toast.Show();
-                        termin.FiveMinutesWarning = true;
+                        try
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                var toast = new ToastNotificationWindow($"? 5 MINUTEN!\n\n{termin.Grund}\n\nUm {termin.Uhrzeit}");
+                                toast.Show();
+                            });
+                            termin.FiveMinutesWarning = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Toast-Anzeige-Fehler: {ex.Message}");
+                            termin.FiveMinutesWarning = true;
+                        }
                     }
                 }
                 else
