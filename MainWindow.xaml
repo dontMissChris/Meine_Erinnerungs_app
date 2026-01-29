@@ -3,8 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Meine Erinnerungs App" Height="300" Width="400">
     <StackPanel Margin="20">
+        <Label Content="Grund:" />
         <TextBox x:Name="GrundTextBox" Margin="5" />
+        <Label Content="Datum:" />
         <TextBox x:Name="DatumTextBox" Margin="5" />
+        <Label Content="Uhrzeit:" />
         <TextBox x:Name="UhrzeitTextBox" Margin="5" />
         <Button Content="GO!" Margin="5" Click="Button_Click" />
         <Button Content="Löschen" Margin="5" Click="Button_Click_1" />
