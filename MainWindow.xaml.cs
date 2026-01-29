@@ -58,12 +58,51 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ERINNERUNG SCHARF GESTELLT");
+            // Get TextBox values
+            var stackPanel = ((sender as Button).Parent as StackPanel);
+            var textBoxes = stackPanel.Children.OfType<TextBox>().ToList();
+
+            if (textBoxes.Count >= 3)
+            {
+                string grund = textBoxes[0].Text;
+                string datum = textBoxes[1].Text;
+                string uhrzeit = textBoxes[2].Text;
+
+                // Validate input
+                if (string.IsNullOrWhiteSpace(grund) || grund == "Grund" ||
+                    string.IsNullOrWhiteSpace(datum) || datum == "Datum" ||
+                    string.IsNullOrWhiteSpace(uhrzeit) || uhrzeit == "Uhrzeit")
+                {
+                    MessageBox.Show("Bitte füllen Sie alle Felder aus.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Create and show toast notification
+                string dateTimeText = $"{datum} um {uhrzeit}";
+                ToastNotificationWindow toast = new ToastNotificationWindow(grund, dateTimeText);
+                toast.Show();
+            }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // Hier können Sie den Code zum Löschen der Erinnerung hinzufügen
+            // Clear all text boxes
+            var stackPanel = ((sender as Button).Parent as StackPanel);
+            var textBoxes = stackPanel.Children.OfType<TextBox>().ToList();
+
+            foreach (var textBox in textBoxes)
+            {
+                textBox.Text = "";
+                textBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Gray);
+            }
+
+            // Reset placeholder text
+            if (textBoxes.Count >= 3)
+            {
+                textBoxes[0].Text = "Grund";
+                textBoxes[1].Text = "Datum";
+                textBoxes[2].Text = "Uhrzeit";
+            }
         }
     }
 }
