@@ -58,12 +58,37 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ERINNERUNG SCHARF GESTELLT");
+            // Get values from named TextBoxes
+            string grund = GrundTextBox.Text;
+            string datum = DatumTextBox.Text;
+            string uhrzeit = UhrzeitTextBox.Text;
+
+            // Validate input
+            if (string.IsNullOrWhiteSpace(grund) || grund == "Grund" ||
+                string.IsNullOrWhiteSpace(datum) || datum == "Datum" ||
+                string.IsNullOrWhiteSpace(uhrzeit) || uhrzeit == "Uhrzeit")
+            {
+                MessageBox.Show("Bitte füllen Sie alle Felder aus.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Create and show toast notification
+            string dateTimeText = $"{datum} um {uhrzeit}";
+            ToastNotificationWindow toast = new ToastNotificationWindow(grund, dateTimeText);
+            toast.Show();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // Hier können Sie den Code zum Löschen der Erinnerung hinzufügen
+            // Clear all text boxes and trigger placeholder text reset
+            GrundTextBox.Text = "";
+            DatumTextBox.Text = "";
+            UhrzeitTextBox.Text = "";
+
+            // Trigger lost focus to restore placeholders
+            AddPlaceholderText(GrundTextBox, new RoutedEventArgs());
+            AddPlaceholderText(DatumTextBox, new RoutedEventArgs());
+            AddPlaceholderText(UhrzeitTextBox, new RoutedEventArgs());
         }
     }
 }
