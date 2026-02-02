@@ -10,11 +10,13 @@ namespace Meine_Erinnerungs_app
     {
         private DispatcherTimer autoCloseTimer;
         private bool isClosing = false;
+        private bool isPersistent; // True = dauerhaft (für abgelaufene Termine)
 
-        public ToastNotificationWindow(string message)
+        public ToastNotificationWindow(string message, bool isPersistent = false)
         {
             InitializeComponent();
             MessageText.Text = message;
+            this.isPersistent = isPersistent;
             
             // Window-Position sofort setzen (vor Loaded)
             var workingArea = SystemParameters.WorkArea;
@@ -59,21 +61,24 @@ namespace Meine_Erinnerungs_app
                 BeginAnimation(OpacityProperty, fadeIn);
                 BeginAnimation(TopProperty, slideDown);
 
-                // Auto-Close Timer
-                autoCloseTimer = new DispatcherTimer
+                // Auto-Close nur für Warnungen (nicht für abgelaufene Termine!)
+                if (!isPersistent)
                 {
-                    Interval = TimeSpan.FromSeconds(8)
-                };
-                autoCloseTimer.Tick += (s, args) =>
-                {
-                    if (!isClosing)
+                    autoCloseTimer = new DispatcherTimer
                     {
-                        CloseWithAnimation();
-                    }
-                };
-                autoCloseTimer.Start();
+                        Interval = TimeSpan.FromSeconds(10)
+                    };
+                    autoCloseTimer.Tick += (s, args) =>
+                    {
+                        if (!isClosing)
+                        {
+                            CloseWithAnimation();
+                        }
+                    };
+                    autoCloseTimer.Start();
+                }
 
-                // Blink-Effekt für Aufmerksamkeit
+                // Blink-Effekt (kontinuierlich für abgelaufene, sonst normal)
                 StartBlinkAnimation();
             }
             catch (Exception ex)
@@ -93,7 +98,7 @@ namespace Meine_Erinnerungs_app
                     To = Color.FromRgb(244, 67, 54),   // Helleres Rot
                     Duration = TimeSpan.FromSeconds(0.5),
                     AutoReverse = true,
-                    RepeatBehavior = new RepeatBehavior(3) // 3x blinken
+                    RepeatBehavior = RepeatBehavior.Forever // Kontinuierlich blinken
                 };
 
                 MainBorder.Background = new SolidColorBrush(Color.FromRgb(211, 47, 47));

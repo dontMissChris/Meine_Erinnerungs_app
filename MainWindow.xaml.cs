@@ -284,7 +284,8 @@ namespace Meine_Erinnerungs_app
                         {
                             try
                             {
-                                var toast = new ToastNotificationWindow($"? {termin.Grund}\n\n{termin.Datum} um {termin.Uhrzeit}");
+                                // isPersistent = true ? Bleibt DAUERHAFT bis manuell geschlossen!
+                                var toast = new ToastNotificationWindow($"? {termin.Grund}\n\n{termin.Datum} um {termin.Uhrzeit}", isPersistent: true);
                                 toast.Show();
                             }
                             catch (Exception ex)
@@ -336,7 +337,8 @@ namespace Meine_Erinnerungs_app
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                var toast = new ToastNotificationWindow($"? 5 MINUTEN!\n\n{termin.Grund}\n\nUm {termin.Uhrzeit}");
+                                // isPersistent = false ? Schlieﬂt sich automatisch nach 10 Sek
+                                var toast = new ToastNotificationWindow($"? 5 MINUTEN!\n\n{termin.Grund}\n\nUm {termin.Uhrzeit}", isPersistent: false);
                                 toast.Show();
                             });
                             termin.FiveMinutesWarning = true;
