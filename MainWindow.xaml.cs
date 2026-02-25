@@ -58,7 +58,10 @@ namespace Meine_Erinnerungs_app
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ERINNERUNG SCHARF GESTELLT");
+            string grund = GrundTextBox.Text == "Grund" ? "" : GrundTextBox.Text;
+            var termin = new Termin { Grund = grund };
+            var toast = new ToastNotificationWindow(termin);
+            toast.Show();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
