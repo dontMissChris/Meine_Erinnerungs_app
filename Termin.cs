@@ -1,116 +1,115 @@
 ﻿using System;
-using System.Windows.Media;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Media;
 using Newtonsoft.Json;
 
 namespace Meine_Erinnerungs_app
 {
-    // die Termin Klasse
     public class Termin : INotifyPropertyChanged
     {
-        public string Grund { get; internal set; } // was ist der Grund
-        public string Datum { get; internal set; } // welches Datum
-        public string Uhrzeit { get; internal set; } // Uhrzeit halt
-        public DateTime Zeitpunkt { get; internal set; } // wann genau der Termin ist
-        
-        
-        [JsonIgnore] // nicht speichern das ist nur fürs aussehen
-        public Brush Background { get; internal set; } // Hintergrundfarbe
-        [JsonIgnore]
-        public Brush BorderBrush { get; internal set; } // Randfarbe
-        
-        
-        private string _countdownText; // der Text für den Countdown
-        [JsonIgnore]
-        public string CountdownText // was angezeigt wird
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string name = null)
         {
-            get => _countdownText;
-            set
-            {
-                _countdownText = value;
-                OnPropertyChanged(nameof(CountdownText));
-            }
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
-        
-        
-        private double _progressValue;
-        [JsonIgnore]
-        public double ProgressValue
+
+        // ---- Felder, die persistiert werden ----
+        // (Brushes werden NICHT direkt gespeichert - die werden aus Zeitpunkt neu berechnet)
+
+        private string grund = "";
+        public string Grund
         {
-            get => _progressValue;
-            set
-            {
-                _progressValue = value;
-                OnPropertyChanged(nameof(ProgressValue));
-            }
+            get { return grund; }
+            set { grund = value; OnPropertyChanged(); }
         }
-        
-        private Brush _progressBarColor;
+
+        private string datum = "";
+        public string Datum
+        {
+            get { return datum; }
+            set { datum = value; OnPropertyChanged(); }
+        }
+
+        private string uhrzeit = "";
+        public string Uhrzeit
+        {
+            get { return uhrzeit; }
+            set { uhrzeit = value; OnPropertyChanged(); }
+        }
+
+        public DateTime Zeitpunkt { get; set; }
+        public DateTime CreatedAt { get; set; }
+
+        public bool AlarmTriggered { get; set; }
+        public bool FiveMinutesWarning { get; set; }
+
+        // ---- Laufzeit-/Anzeige-Felder (NICHT persistiert) ----
+
+        private Brush background = Brushes.Transparent;
+        [JsonIgnore]
+        public Brush Background
+        {
+            get { return background; }
+            set { background = value; OnPropertyChanged(); }
+        }
+
+        private Brush borderBrush = Brushes.Transparent;
+        [JsonIgnore]
+        public Brush BorderBrush
+        {
+            get { return borderBrush; }
+            set { borderBrush = value; OnPropertyChanged(); }
+        }
+
+        private Brush progressBarColor = Brushes.LimeGreen;
         [JsonIgnore]
         public Brush ProgressBarColor
         {
-            get => _progressBarColor;
-            set
-            {
-                _progressBarColor = value;
-                OnPropertyChanged(nameof(ProgressBarColor));
-            }
+            get { return progressBarColor; }
+            set { progressBarColor = value; OnPropertyChanged(); }
         }
-        
-        private bool _shouldBlink;
+
+        private double progressValue;
+        [JsonIgnore]
+        public double ProgressValue
+        {
+            get { return progressValue; }
+            set { progressValue = value; OnPropertyChanged(); }
+        }
+
+        private string countdownText = "";
+        [JsonIgnore]
+        public string CountdownText
+        {
+            get { return countdownText; }
+            set { countdownText = value; OnPropertyChanged(); }
+        }
+
+        private bool shouldBlink;
         [JsonIgnore]
         public bool ShouldBlink
         {
-            get => _shouldBlink;
-            set
-            {
-                _shouldBlink = value;
-                OnPropertyChanged(nameof(ShouldBlink));
-            }
+            get { return shouldBlink; }
+            set { shouldBlink = value; OnPropertyChanged(); }
         }
-        
-        private double _itemScale = 1.0;
-        [JsonIgnore]
-        public double ItemScale
-        {
-            get => _itemScale;
-            set
-            {
-                _itemScale = value;
-                OnPropertyChanged(nameof(ItemScale));
-            }
-        }
-        
-        private bool _shouldPulseText;
+
+        private bool shouldPulseText;
         [JsonIgnore]
         public bool ShouldPulseText
         {
-            get => _shouldPulseText;
-            set
-            {
-                _shouldPulseText = value;
-                OnPropertyChanged(nameof(ShouldPulseText));
-            }
+            get { return shouldPulseText; }
+            set { shouldPulseText = value; OnPropertyChanged(); }
         }
-        
-        
-        public bool AlarmTriggered { get; internal set; }
-        public bool FiveMinutesWarning { get; internal set; }
-        public bool TenMinutesWarning { get; internal set; }
-        public bool FifteenMinutesWarning { get; internal set; }
-        public bool ThirtyMinutesWarning { get; internal set; } // 30 Min Warnung
-        public bool SixtyMinutesWarning { get; internal set; } // 60 Min Warnung
-        
-        public DateTime CreatedAt { get; internal set; } // wann wurde der Termin erstellt
 
-        public event PropertyChangedEventHandler PropertyChanged; // damit die UI sich updatet
-        
-        // wird aufgerufen wenn sich was ändert
-        protected void OnPropertyChanged(string propertyName)
+        private double itemScale = 1.0;
+        [JsonIgnore]
+        public double ItemScale
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            get { return itemScale; }
+            set { itemScale = value; OnPropertyChanged(); }
         }
     }
 }
-
-

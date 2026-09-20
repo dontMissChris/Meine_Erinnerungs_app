@@ -1,7 +1,9 @@
 using System;
+using System.Media;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Threading;
 
 namespace Meine_Erinnerungs_app
@@ -17,13 +19,12 @@ namespace Meine_Erinnerungs_app
             InitializeComponent();
             MessageText.Text = message;
             this.isPersistent = isPersistent;
-            
-            // Window-Position sofort setzen (vor Loaded)
+
             var workingArea = SystemParameters.WorkArea;
             Width = workingArea.Width;
             Left = workingArea.Left;
-            Top = workingArea.Top - Height; // Starte außerhalb des Bildschirms
-            
+            Top = workingArea.Top - Height;
+
             Loaded += ToastNotificationWindow_Loaded;
         }
 
@@ -33,14 +34,12 @@ namespace Meine_Erinnerungs_app
 
             try
             {
-                // Einfache Animation: Fade In + Slide Down
                 Opacity = 0;
-                
+
                 var workingArea = SystemParameters.WorkArea;
                 double startTop = workingArea.Top - Height;
                 double endTop = workingArea.Top;
 
-                // Opacity Animation
                 var fadeIn = new DoubleAnimation
                 {
                     From = 0,
@@ -48,7 +47,6 @@ namespace Meine_Erinnerungs_app
                     Duration = TimeSpan.FromSeconds(0.3)
                 };
 
-                // Top Position Animation
                 var slideDown = new DoubleAnimation
                 {
                     From = startTop,
@@ -57,11 +55,9 @@ namespace Meine_Erinnerungs_app
                     EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
                 };
 
-                // Animationen starten
                 BeginAnimation(OpacityProperty, fadeIn);
                 BeginAnimation(TopProperty, slideDown);
 
-                // Auto-Close nur für Warnungen (nicht für abgelaufene Termine!)
                 if (!isPersistent)
                 {
                     autoCloseTimer = new DispatcherTimer
@@ -78,8 +74,9 @@ namespace Meine_Erinnerungs_app
                     autoCloseTimer.Start();
                 }
 
-                // Blink-Effekt (kontinuierlich für abgelaufene, sonst normal)
                 StartBlinkAnimation();
+                StartGlowAnimation();
+                PlayAlarmSound();
             }
             catch (Exception ex)
             {
@@ -98,11 +95,43 @@ namespace Meine_Erinnerungs_app
                     To = Color.FromRgb(244, 67, 54),   // Helleres Rot
                     Duration = TimeSpan.FromSeconds(0.5),
                     AutoReverse = true,
-                    RepeatBehavior = RepeatBehavior.Forever // Kontinuierlich blinken
+                    RepeatBehavior = RepeatBehavior.Forever
                 };
 
                 MainBorder.Background = new SolidColorBrush(Color.FromRgb(211, 47, 47));
                 MainBorder.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+            }
+            catch { }
+        }
+
+        // NEU: Leuchtender Rand um das gesamte Toast-Fenster (Desktop-Glow)
+        private void StartGlowAnimation()
+        {
+            try
+            {
+                if (MainBorder.Effect is DropShadowEffect glow)
+                {
+                    var blurAnimation = new DoubleAnimation
+                    {
+                        From = 5,
+                        To = 40,
+                        Duration = TimeSpan.FromSeconds(0.6),
+                        AutoReverse = true,
+                        RepeatBehavior = RepeatBehavior.Forever,
+                        EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+                    };
+                    glow.BeginAnimation(DropShadowEffect.BlurRadiusProperty, blurAnimation);
+                }
+            }
+            catch { }
+        }
+
+        // NEU: Warnton beim Erscheinen
+        private void PlayAlarmSound()
+        {
+            try
+            {
+                SystemSounds.Exclamation.Play();
             }
             catch { }
         }
@@ -124,7 +153,6 @@ namespace Meine_Erinnerungs_app
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // Cleanup
             StopAllAnimations();
             if (autoCloseTimer != null)
             {
@@ -140,17 +168,14 @@ namespace Meine_Erinnerungs_app
 
             try
             {
-                // Timer stoppen
                 if (autoCloseTimer != null)
                 {
                     autoCloseTimer.Stop();
                     autoCloseTimer = null;
                 }
 
-                // Alle laufenden Animationen stoppen
                 StopAllAnimations();
 
-                // Fade Out Animation
                 var fadeOut = new DoubleAnimation
                 {
                     To = 0,
@@ -181,10 +206,15 @@ namespace Meine_Erinnerungs_app
                 BeginAnimation(OpacityProperty, null);
                 BeginAnimation(TopProperty, null);
                 BeginAnimation(LeftProperty, null);
-                
+
                 if (MainBorder?.Background != null)
                 {
                     MainBorder.Background.BeginAnimation(SolidColorBrush.ColorProperty, null);
+                }
+
+                if (MainBorder?.Effect is DropShadowEffect glow)
+                {
+                    glow.BeginAnimation(DropShadowEffect.BlurRadiusProperty, null);
                 }
             }
             catch { }
@@ -212,4 +242,3 @@ namespace Meine_Erinnerungs_app
         }
     }
 }
-

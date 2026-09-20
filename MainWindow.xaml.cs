@@ -20,6 +20,9 @@ namespace Meine_Erinnerungs_app
         private DispatcherTimer zeitgeber;
         private HashSet<Termin> blinkendeTermine = new HashSet<Termin>();
 
+        private readonly string speicherPfad = System.IO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory, "termine.json");
+
         public ObservableCollection<Termin> Termine { get; set; }
 
         public MainWindow()
@@ -27,8 +30,59 @@ namespace Meine_Erinnerungs_app
             InitializeComponent();
             Termine = new ObservableCollection<Termin>();
             ErgebnisListBox.ItemsSource = Termine;
+
+            TermineLaden();
             ZeitgeberStarten();
             AnzeigeAktualisieren();
+            TerminePruefen();
+        }
+
+        private void TermineSpeichern()
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(Termine, Formatting.Indented);
+                File.WriteAllText(speicherPfad, json);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Speichern-Fehler: {ex.Message}");
+            }
+        }
+
+        private void TermineLaden()
+        {
+            try
+            {
+                if (!File.Exists(speicherPfad))
+                    return;
+
+                var json = File.ReadAllText(speicherPfad);
+                var geladeneTermine = JsonConvert.DeserializeObject<List<Termin>>(json);
+
+                if (geladeneTermine == null)
+                    return;
+
+                foreach (var termin in geladeneTermine)
+                {
+                    termin.Background = new SolidColorBrush(Color.FromArgb(200, 40, 40, 40));
+                    termin.BorderBrush = new SolidColorBrush(Color.FromArgb(180, 120, 120, 120));
+                    termin.ProgressBarColor = new SolidColorBrush(Colors.LimeGreen);
+                    Termine.Add(termin);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Laden-Fehler: {ex.Message}");
+                MessageBox.Show($"Die gespeicherten Termine konnten nicht geladen werden:\n{ex.Message}",
+                    "Ladefehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            TermineSpeichern();
+            base.OnClosing(e);
         }
 
         private void StundenHoch_Klick(object sender, RoutedEventArgs e)
@@ -95,7 +149,7 @@ namespace Meine_Erinnerungs_app
                 sekunden = sek;
 
             DateTime zeitpunkt = DatumTextBox.SelectedDate.Value.Date.Add(new TimeSpan(stunden, minuten, sekunden));
-            
+
             if (zeitpunkt < DateTime.Now.AddMinutes(-1))
             {
                 MessageBox.Show($"Die Zeit liegt in der Vergangenheit!\nEingegebene Zeit: {zeitpunkt}\nAktuelle Zeit: {DateTime.Now}");
@@ -141,6 +195,7 @@ namespace Meine_Erinnerungs_app
             };
 
             Termine.Add(termin);
+            TermineSpeichern();
             TerminePruefen();
             GrundTextBox.Text = "";
             DatumTextBox.SelectedDate = null;
@@ -158,7 +213,7 @@ namespace Meine_Erinnerungs_app
                 if (listenEintrag != null)
                 {
                     var animationsAblauf = new Storyboard();
-                    
+
                     var ausblenden = new DoubleAnimation
                     {
                         From = 1.0,
@@ -168,7 +223,7 @@ namespace Meine_Erinnerungs_app
                     };
                     Storyboard.SetTarget(ausblenden, listenEintrag);
                     Storyboard.SetTargetProperty(ausblenden, new PropertyPath("Opacity"));
-                    
+
                     var skalierungX = new DoubleAnimation
                     {
                         From = 1.0,
@@ -183,32 +238,34 @@ namespace Meine_Erinnerungs_app
                         Duration = TimeSpan.FromSeconds(0.8),
                         EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseIn, Exponent = 3 }
                     };
-                    
+
                     var transformGruppe = new TransformGroup();
                     var skalierung = new ScaleTransform(1, 1, 0.5, 0.5);
                     transformGruppe.Children.Add(skalierung);
                     listenEintrag.RenderTransform = transformGruppe;
                     listenEintrag.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
-                    
+
                     Storyboard.SetTarget(skalierungX, skalierung);
                     Storyboard.SetTargetProperty(skalierungX, new PropertyPath("ScaleX"));
                     Storyboard.SetTarget(skalierungY, skalierung);
                     Storyboard.SetTargetProperty(skalierungY, new PropertyPath("ScaleY"));
-                    
+
                     animationsAblauf.Children.Add(ausblenden);
                     animationsAblauf.Children.Add(skalierungX);
                     animationsAblauf.Children.Add(skalierungY);
-                    
+
                     animationsAblauf.Completed += (s, args) =>
                     {
                         Termine.Remove(ausgewaehlt);
+                        TermineSpeichern();
                     };
-                    
+
                     animationsAblauf.Begin();
                 }
                 else
                 {
                     Termine.Remove(ausgewaehlt);
+                    TermineSpeichern();
                 }
             }
         }
@@ -231,7 +288,7 @@ namespace Meine_Erinnerungs_app
             {
                 TimeSpan differenz = termin.Zeitpunkt - DateTime.Now;
                 TimeSpan gesamtZeit = termin.Zeitpunkt - termin.CreatedAt;
-                
+
                 if (gesamtZeit.TotalSeconds > 0)
                 {
                     double vergangen = (DateTime.Now - termin.CreatedAt).TotalSeconds;
@@ -277,14 +334,12 @@ namespace Meine_Erinnerungs_app
                     termin.ItemScale = 0.75;
                     if (!termin.AlarmTriggered)
                     {
-                        termin.AlarmTriggered = true; // Sofort markieren um Mehrfach-Trigger zu vermeiden
-                        
-                        // Toast mit Verzögerung erstellen, damit MainWindow zuerst fertig wird
+                        termin.AlarmTriggered = true;
+
                         Dispatcher.BeginInvoke(new Action(() =>
                         {
                             try
                             {
-                                // isPersistent = true ? Bleibt DAUERHAFT bis manuell geschlossen!
                                 var toast = new ToastNotificationWindow($"? {termin.Grund}\n\n{termin.Datum} um {termin.Uhrzeit}", isPersistent: true);
                                 toast.Show();
                             }
@@ -330,14 +385,13 @@ namespace Meine_Erinnerungs_app
                     termin.ShouldBlink = true;
                     termin.ShouldPulseText = true;
                     termin.ItemScale = 1.25;
-                    
+
                     if (!termin.FiveMinutesWarning && differenz.TotalMinutes <= 5)
                     {
                         try
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                // isPersistent = false ? Schließt sich automatisch nach 10 Sek
                                 var toast = new ToastNotificationWindow($"? 5 MINUTEN!\n\n{termin.Grund}\n\nUm {termin.Uhrzeit}", isPersistent: false);
                                 toast.Show();
                             });
@@ -360,8 +414,11 @@ namespace Meine_Erinnerungs_app
                     termin.ItemScale = 1.0;
                 }
             }
-            
-            var sortierteTermine = Termine.OrderBy(t => t.Zeitpunkt).ToList();
+
+            var sortierteTermine = Termine
+                .OrderBy(t => t.Zeitpunkt <= DateTime.Now)
+                .ThenBy(t => t.Zeitpunkt)
+                .ToList();
             for (int i = 0; i < sortierteTermine.Count; i++)
             {
                 int aktuellIndex = Termine.IndexOf(sortierteTermine[i]);
